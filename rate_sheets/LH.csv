@@ -1,0 +1,5 @@
+airline,origin,destination,currency,valid_from,valid_to,min_charge,rate_normal,rate_45,rate_100,rate_300,rate_500
+LH,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60
+LH,FRA,JFK,EUR,2026-04-01,2026-06-30,95.00,4.30,3.95,3.55,3.05,2.70
+LH,FRA,ORD,EUR,2026-01-01,2026-06-30,90.00,4.50,4.10,3.70,3.20,2.85
+LH,MUC,JFK,EUR,2026-01-01,2026-06-30,90.00,4.20,3.90,3.50,3.00,2.65

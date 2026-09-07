@@ -1,0 +1,24 @@
+[project]
+name = "quote-service-challenge"
+version = "0.1.0"
+description = "cargo.one take-home: rate sheet ingestion and quoting service"
+requires-python = ">=3.12"
+dependencies = [
+    "grpcio>=1.71.2,<2",
+    "protobuf>=5.29,<6",
+]
+
+[dependency-groups]
+dev = [
+    "grpcio-tools>=1.71.2,<2",
+    "pytest>=8",
+    "ruff>=0.8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["proto/*_pb2*.py", "proto/*_pb2*.pyi"]

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package cargoone.interviewing.quote.v1;
+
+// Rates in, offers out.
+//
+// You may add fields and messages. Keep the two RPCs and the existing
+// GetQuoteRequest fields so our client keeps working. If you change a
+// type (for example money as a decimal string instead of a double),
+// say why in SPEC.md.
+service QuoteService {
+  // Load one airline's rate sheet. The CSV format is described in the README
+  // and shown in rate_sheets/.
+  rpc IngestRateSheet(IngestRateSheetRequest) returns (IngestRateSheetResponse);
+
+  // Quote a shipment: one offer per airline that has an applicable rate.
+  rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse);
+}
+
+message IngestRateSheetRequest {
+  // Full CSV file content, header row included.
+  string csv_content = 1;
+}
+
+message IngestRateSheetResponse {
+  int32 rows_ingested = 1;
+}
+
+// Centimetres.
+message Dimensions {
+  double length_cm = 1;
+  double width_cm = 2;
+  double height_cm = 3;
+}
+
+message GetQuoteRequest {
+  string origin = 1;         // IATA airport code, e.g. FRA
+  string destination = 2;    // e.g. JFK
+  double weight_kg = 3;      // actual gross weight
+  Dimensions dimensions = 4;
+  string shipping_date = 5;  // ISO 8601 date, e.g. 2026-02-10
+}
+
+message Offer {
+  string airline = 1;              // IATA airline code, e.g. LH
+  string currency = 2;             // ISO 4217, from the rate sheet
+  double chargeable_weight_kg = 3;
+  string weight_break = 4;         // "normal", "45", "100", "300" or "500"
+  double rate_per_kg = 5;
+  double total_price = 6;          // after the min_charge floor
+}
+
+message GetQuoteResponse {
+  // One per airline with a valid, applicable rate. Empty is a valid answer.
+  repeated Offer offers = 1;
+}

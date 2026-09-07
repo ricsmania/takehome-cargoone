@@ -1,0 +1,4 @@
+airline,origin,destination,currency,valid_from,valid_to,min_charge,rate_normal,rate_45,rate_100,rate_300,rate_500
+AF,CDG,JFK,EUR,2026-01-01,2026-06-30,85.00,4.00,3.70,3.30,2.90,2.55
+AF,CDG,JFK,EUR,2026-03-01,2026-03-31,85.00,3.60,3.30,3.00,2.60,2.30
+AF,FRA,JFK,EUR,2026-01-01,2026-06-30,100.00,4.40,4.05,3.65,3.15,2.80

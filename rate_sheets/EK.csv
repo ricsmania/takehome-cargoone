@@ -1,0 +1,4 @@
+airline,origin,destination,currency,valid_from,valid_to,min_charge,rate_normal,rate_45,rate_100,rate_300,rate_500
+EK,FRA,JFK,USD,2026-01-01,2026-12-31,150.00,5.20,4.60,3.20,2.80,2.40
+EK,FRA,DXB,USD,2026-01-01,2026-12-31,150.00,3.10,2.80,2.50,2.20,1.90
+EK,DXB,JFK,USD,2026-01-01,2026-12-31,150.00,4.90,4.40,3.90,3.40,3.00
