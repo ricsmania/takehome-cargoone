@@ -12,15 +12,19 @@ Budget: about **4 focused hours**, spread over a **7-day window** as you like.
 
 ## Ground rules
 
-- **Use an AI coding agent. We encourage Claude Code.** It is what we ship
-  with day to day, and the follow-up interview assumes an agentic tool. An
-  equivalent agent is fine if that is your real workflow. We will discuss
-  *how* you used it as seriously as *what* you built.
+- **AI tools are allowed and encouraged, not required.** We build with
+  Claude Code day to day and we are happy to see you use it or an
+  equivalent. If you would rather write this one by hand, that is fine
+  too. Either way, tell us in `AI_NOTES.md` how you worked, and what you
+  have tried with these tools elsewhere. We hire on engineering judgement
+  and teach the workflow.
 - **Spec first.** Fill in `SPEC.md` before you write code, and commit it
   before the code. The commit history should show that order.
-- **Keep an AI log** in `AI_NOTES.md`: which tools, where the model was wrong
-  or you overrode it, what you would set up differently. "It one-shotted
-  everything" is not a credible log.
+- **Keep it honest in `AI_NOTES.md`.** If you used an agent: which one,
+  where it was wrong or you overrode it, what you kept without fully
+  understanding. "It one-shotted everything" is not a credible log. If you
+  did not use one: say why, and what you have tried with these tools on
+  other real code.
 - **Respect the timebox.** Unfinished but specced beats gold-plated but late.
   Note what you cut and why, and tell us how long you actually spent.
 - **Deliver as a branch and merge request** on this repository. Branch
@@ -108,16 +112,19 @@ this README updated with how to run your version.
 
 ### What we look for
 
-We read `SPEC.md`, the tests and `AI_NOTES.md` as closely as the code.
+We read `SPEC.md` and the tests as closely as the code. The rating logic,
+the data model and the seam between them carry the grade. `AI_NOTES.md`
+tells us how you work; it differentiates, it does not filter.
 
 ### What happens next
 
 We grade every submission against the same rubric within 3 working days
 of your MR. If it passes, there is 1 technical interview of 75 minutes
-with one of our tech leads. In it you defend your submission with AI
-tools closed, extend it live with your own agent, and then scale the
-design on a whiteboard. Please have your environment and your agent ready
-on your branch for that call. There is no other technical round.
+with one of our tech leads. In it you defend your submission and its data
+model with tools closed, extend it live the way you normally work (agent,
+editor, your call), and then scale the design on a whiteboard. Please
+have your environment ready on your branch for that call. There is no
+other technical round.
 
 ## Running the scaffold
 
