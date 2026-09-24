@@ -9,6 +9,11 @@ airlines in many shapes; offers go out to forwarders. This challenge is the
 smallest honest version of that loop.
 
 Budget: about **4 focused hours**, spread over a **7-day window** as you like.
+It is 1 small service with 2 RPCs. A 4 hour version is: the rating logic
+with tests, ingestion that loads the sample sheets into memory, and a spec
+that says what you decided and what you cut. Validation, persistence and
+the awkward edge cases are where extra hours go, and cutting them with a
+note is fine.
 
 ## Ground rules
 
@@ -18,8 +23,10 @@ Budget: about **4 focused hours**, spread over a **7-day window** as you like.
   too. Either way, tell us in `AI_NOTES.md` how you worked, and what you
   have tried with these tools elsewhere. We hire on engineering judgement
   and teach the workflow.
-- **Spec first.** Fill in `SPEC.md` before you write code, and commit it
-  before the code. The commit history should show that order.
+- **Spec first.** Fill in `SPEC.md` before you write code. We like to see
+  it committed first, but what it says matters more than when it landed:
+  decisions on the fuzzy rules, acceptance criteria we could paste into a
+  test, and what you cut.
 - **Keep it honest in `AI_NOTES.md`.** If you used an agent: which one,
   where it was wrong or you overrode it, what you kept without fully
   understanding. "It one-shotted everything" is not a credible log. If you
@@ -125,6 +132,14 @@ model with tools closed, extend it live the way you normally work (agent,
 editor, your call), and then scale the design on a whiteboard. Please
 have your environment ready on your branch for that call. There is no
 other technical round.
+
+### Language
+
+The scaffold is Python and that is our stack. If you are stronger in
+another language, implement the same `proto/quote.proto` in that language
+instead: keep the 2 RPCs and the request fields, listen on port 50051, and
+document the run command in this README. We grade the design and the
+rating logic, not the language.
 
 ## Running the scaffold
 
