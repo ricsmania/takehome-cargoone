@@ -3,20 +3,16 @@
 How you worked, and how you work with AI tools in general. Short is fine.
 Delete these prompts as you fill the sections in.
 
-## Tools and setup
+## How you worked
 
-Which agent and model, if any. Any rules file, system prompt or skills you
-gave it. If you wrote this by hand, say so and why.
+Which agent and model, if any, and what you gave it (rules file, system
+prompt, skills). If you wrote this by hand, say so and why.
 
-## Where the model was wrong
+## Where it went wrong and what you changed
 
-Concrete cases: wrong assumption, subtle bug, invented API, bad test. How you
-caught each one. Skip if you did not use one here.
-
-## What you overrode
-
-Generated code or design you rejected or rewrote, and why. Skip if you did
-not use one here.
+If you used an agent: concrete cases where it was wrong (a bad assumption,
+a subtle bug, an invented API, a weak test), how you caught each one, and
+what you rewrote. If you did not use one: skip this section.
 
 ## What you kept without fully understanding
 

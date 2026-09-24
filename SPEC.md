@@ -1,8 +1,7 @@
 # SPEC
 
-Write this before the code. Commit it before the code too; we read the history.
-
-Delete these prompts as you fill the sections in. Bullets are fine.
+Fill this in before you write code. What it says matters more than when it
+landed. Delete these prompts as you fill the sections in. Bullets are fine.
 
 ## Problem understanding
 
@@ -11,9 +10,8 @@ sharp, which are fuzzy, and how you read the fuzzy ones.
 
 ## Design decisions
 
-The choices you made and why. Storage, how rating is structured, where the
-persistence seam is, how errors map to gRPC status codes, anything you changed
-in the proto.
+The choices you made and why: storage, how rating is structured, how errors
+are reported, anything you changed in the proto.
 
 ## Acceptance criteria
 
@@ -22,8 +20,8 @@ LH quotes 340.00 EUR at the 100 break" is one. "Quoting works" is not.
 
 ## Edge cases
 
-The awkward ones: volumetric vs actual weight, a higher break being cheaper,
-the min charge, validity boundaries, overlapping windows, bad input.
+The awkward cases you found in the rules and in the sample data, and what
+you decided for each.
 
 ## Cut scope
 
