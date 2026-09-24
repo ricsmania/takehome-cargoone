@@ -110,6 +110,15 @@ this README updated with how to run your version.
 
 We read `SPEC.md`, the tests and `AI_NOTES.md` as closely as the code.
 
+### What happens next
+
+We grade every submission against the same rubric within 3 working days
+of your MR. If it passes, there is 1 technical interview of 75 minutes
+with one of our tech leads. In it you defend your submission with AI
+tools closed, extend it live with your own agent, and then scale the
+design on a whiteboard. Please have your environment and your agent ready
+on your branch for that call. There is no other technical round.
+
 ## Running the scaffold
 
 Needs Python 3.12+ and [uv](https://docs.astral.sh/uv/).
