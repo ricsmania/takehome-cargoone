@@ -1,7 +1,0 @@
-image: eu.gcr.io/cargo-one/gitlab-runner-python3_12-uv
-
-test:
-  script:
-    - make install
-    - make lint
-    - make test

@@ -90,8 +90,8 @@ plated but late.
 
 ## What you hand in
 
-A branch `firstname-lastname` and a merge request into `main`, with the MR
-description as your summary. On the branch:
+A branch `firstname-lastname` and a pull request into `main` in this
+repository, with the PR description as your summary. On the branch:
 
 - `SPEC.md`, filled in before you write code. What it says matters more
   than when it landed: your reading of the fuzzy rules, acceptance criteria
@@ -153,7 +153,7 @@ AI_NOTES.md             your notes on how you worked
 ## What happens next
 
 We grade every submission against the same rubric within 3 working days of
-your MR. If it passes, there is 1 technical interview of 75 minutes with one
+your pull request. If it passes, there is 1 technical interview of 75 minutes with one
 of our tech leads: you defend your submission and its data model with tools
 closed, extend it live the way you normally work (agent, editor, your
 call), then scale the design on a whiteboard. Have your environment ready
