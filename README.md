@@ -18,6 +18,13 @@ Implement the 2 RPCs in `proto/quote.proto`:
   for the shipment. No applicable rate means no offer for that airline. That
   is not an error.
 
+`proto/quote.proto` is the contract. We test your service with our own
+client, built from that file as it is in this repository. You may add
+fields and messages. Do not remove, rename, renumber or retype the 2 RPCs
+or any existing field, in the requests or in the responses. If you want a
+better type for money than a double, add a new field next to the existing
+one and fill both.
+
 ### Rate sheets
 
 One CSV per airline, in `rate_sheets/`. One row per lane and validity window:
@@ -132,8 +139,8 @@ It tells us how you work. You do not need AI experience to pass.
 
 The scaffold is Python and that is our stack. If you are stronger in
 another language, implement the same `proto/quote.proto` in that language
-instead: keep the 2 RPCs and the request fields, listen on port 50051, and
-document the run command here. We grade the design and the rating logic,
+instead: keep the 2 RPCs and every existing field, listen on port 50051,
+and document the run command here. We grade the design and the rating logic,
 not the language.
 
 ## Running the scaffold
