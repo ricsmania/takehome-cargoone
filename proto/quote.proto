@@ -4,10 +4,15 @@ package cargoone.interviewing.quote.v1;
 
 // Rates in, offers out.
 //
-// You may add fields and messages. Keep the two RPCs and the existing
-// GetQuoteRequest fields so our client keeps working. If you change a
-// type (for example money as a decimal string instead of a double),
-// say why in SPEC.md.
+// This file is the contract with our client. We run our own client,
+// built from this exact file, against your service.
+//
+// You may add fields and messages. Do not remove, rename, renumber or
+// retype anything that is here: the 2 RPCs and every existing field of
+// the requests and the responses stay as they are. If you want money in a
+// better type than a double (integer cents, a decimal string), add a new
+// field with a new number next to the existing one, fill both, and say
+// why in SPEC.md.
 service QuoteService {
   // Load one airline's rate sheet. The CSV format is described in the README
   // and shown in rate_sheets/.
