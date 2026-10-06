@@ -4,7 +4,7 @@ Airlines send us rate sheets. Build a small gRPC service that ingests them
 and quotes shipments. cargo.one is a marketplace for air cargo: forwarders
 search, compare and book capacity across airlines. Rates come in from
 airlines in many shapes, offers go out to forwarders, and this exercise is
-the smallest honest version of that loop.
+a small version of that loop.
 
 Budget: about 4 focused hours, spread over a 7 day window as you like.
 
@@ -39,10 +39,13 @@ ingestion does with it.
 
 1. Chargeable weight = max(actual weight, volumetric weight), where
    volumetric weight in kg = length x width x height in cm / 6000.
-2. Weight break: the applicable break is the highest one at or below the
-   chargeable weight. But a higher break may be cheaper (rate it as if the
-   shipment weighed the break's minimum). If so, use it. This is called
-   as-agreed rating.
+2. Weight break: each break starts at its own minimum weight and ends just
+   below the next break's minimum. `normal` is under 45 kg, `45` is 45 kg up
+   to but not including 100 kg, and so on. `500` has no upper limit. Start
+   with the break that contains the chargeable weight.
+   A higher break can still be cheaper. To compare, price the higher break
+   at its own minimum weight, not at the chargeable weight. If that total is
+   lower, use the higher break. This is called as-agreed rating.
 3. Minimum charge: total price is never below `min_charge`.
 4. Validity: a rate sheet row applies only if `shipping_date` falls inside
    its window.
@@ -56,8 +59,9 @@ case, decide, and write the decision in `SPEC.md`.
 Shipment FRA to JFK, 80 kg, 120 x 80 x 60 cm, shipping 2026-02-10.
 
 Volumetric weight is 120 x 80 x 60 / 6000 = 96 kg, so chargeable weight is
-96 kg. For LH (first row above): the 45 break gives 96 x 3.80 = 364.80 EUR,
-but the 100 break gives 100 x 3.40 = 340.00 EUR, which is cheaper. Offer:
+96 kg. Take the LH row from the CSV sample under "Rate sheets" above. 96 kg
+falls in the 45 break: 96 kg x 3.80 = 364.80 EUR. The 100 break, priced at
+its minimum weight, is 100 kg x 3.40 = 340.00 EUR, which is cheaper. Offer:
 LH, 340.00 EUR, break 100.
 
 With all 4 sample sheets ingested, the same request yields 4 offers:
@@ -69,8 +73,21 @@ With all 4 sample sheets ingested, the same request yields 4 offers:
 | EK      | 320.00 | USD      | 100   |
 | QR      | 360.00 | USD      | 100   |
 
-A 5 kg, 20 x 20 x 20 cm shipment on the same lane and date would rate at
-5 x 4.10 = 20.50 EUR for LH, so the offer is the 90.00 EUR minimum charge.
+A second shipment on the same lane and date, 75 kg, 10 x 10 x 10 cm
+(chargeable weight 75 kg), does not land on the same break for every
+airline:
+
+| Airline | Total  | Currency | Break | Why                                   |
+|---------|--------|----------|-------|---------------------------------------|
+| LH      | 285.00 | EUR      | 45    | 75 x 3.80 = 285.00, the 100 break is 340.00 |
+| AF      | 303.75 | EUR      | 45    | 75 x 4.05 = 303.75, the 100 break is 365.00 |
+| EK      | 320.00 | USD      | 100   | 75 x 4.60 = 345.00, the 100 break is 100 x 3.20 = 320.00 |
+| QR      | 322.50 | USD      | 45    | 75 x 4.30 = 322.50, the 100 break is 360.00 |
+
+Minimum charge: a 5 kg, 20 x 20 x 20 cm shipment on the same lane and date
+has a chargeable weight of 5 kg. For LH that is 5 kg x 4.10 (the `normal`
+rate) = 20.50 EUR, which is below LH's `min_charge` of 90.00 EUR. The offer
+is 90.00 EUR.
 
 ### Scope
 
@@ -79,14 +96,15 @@ A 5 kg, 20 x 20 x 20 cm shipment on the same lane and date would rate at
 - Storage kept simple. In-memory or SQLite is fine. What we look for is a
   clean seam: real persistence should be swappable in later without touching
   the rating logic.
-- Tests where they earn their keep. The rating logic above all.
-- Runs with one documented command.
+- Tests for the parts that matter most. Start with the rating logic.
+- The gRPC server starts with 1 documented command. The scaffold uses
+  `make run`.
 
 A 4 hour version is the rating logic with tests, ingestion that loads the
 sample sheets, and a spec that says what you decided and what you cut.
 Validation, persistence and the awkward edge cases are where extra hours
-go. Cutting them with a note is fine. Unfinished but specced beats gold
-plated but late.
+go. Cutting them with a note is fine. We prefer an unfinished submission
+with a clear spec over a polished one that took 3 times the budget.
 
 ## What you hand in
 
@@ -105,10 +123,10 @@ repository, with the PR description as your summary. On the branch:
 - This README updated with how to run your version, and how long you
   actually spent.
 
-We read `SPEC.md` and the tests as closely as the code. The rating logic,
-the data model and the seam between them carry the grade. `AI_NOTES.md`
-tells us how you work; it differentiates, it does not filter. We hire on
-engineering judgement and teach the workflow.
+We read `SPEC.md` and the tests as closely as the code. Most of the grade
+comes from 3 things: the rating logic, the data model, and how cleanly
+storage is separated from rating. `AI_NOTES.md` is not a pass or fail item.
+It tells us how you work. You do not need AI experience to pass.
 
 ### Language
 
@@ -154,7 +172,9 @@ AI_NOTES.md             your notes on how you worked
 
 We grade every submission against the same rubric within 3 working days of
 your pull request. If it passes, there is 1 technical interview of 75 minutes with one
-of our tech leads: you defend your submission and its data model with tools
-closed, extend it live the way you normally work (agent, editor, your
-call), then scale the design on a whiteboard. Have your environment ready
-on your branch for that call. There is no other technical round.
+of our tech leads. It has 3 parts. First you walk us through your submission
+and its data model, and we ask questions. No AI tools in this part. Then you
+extend it live the way you normally work (agent, editor, your call). Then we
+discuss how the design would scale, again without AI tools. Have your
+environment ready on your branch for that call. There is no other technical
+round.
