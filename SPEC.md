@@ -59,7 +59,7 @@ The awkward cases you found in the rules and in the sample data, and what
 you decided for each.
 
 - The sample data for AF has an overlap in the validity windows. I have decided to calculate both and return the lowest calculated price, but it could also be the case that we would choose the innermost range always, or reject the rate sheet.
-- Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight to 0.1 kg.
+- Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight to 0.1 kg, also when calculating the chargeable weight.
 - Dimensions are also double and the examples are int. I decided to round it to the nearest whole cm.
 - The rate sheets only have examples for USD and EUR, so I allow those and reject everything else
 - If a rate is missing, do we assume the lower rate, higher rate, or reject? Line 6 has rate_45 missing, and it's not clear whether this means it's the same as normal, or if it's a mistake.
