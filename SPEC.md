@@ -24,7 +24,7 @@ The rate sheets are provided by the airline, and include origin/destination comb
 
 Fuzzy rules:
 
-- One of the example rate sheets has overlapping validity windows and there's no mention of what to do in this case. It does say "one row per lane and vality window" which technically makes the sheet correct because they are different validity windows. It's not clear how to handle this though, for example if we should reject the rate sheet for that lane, use the narrowest window (which would also be tricky and have lots of edge cases), assume the lowest or highest price, etc.
+- One of the example rate sheets has overlapping validity windows and there's no mention of what to do in this case. It does say "one row per lane and validity window" which technically makes the sheet correct because they are different validity windows. It's not clear how to handle this though, for example if we should reject the rate sheet for that lane, use the narrowest window (which would also be tricky and have lots of edge cases), assume the lowest or highest price, etc.
 - It's not clear what would happen if a new rate sheet is sent for the same airline. It could mean that we completely replace the rates, and if there are date ranges not covered by the new sheet we reject the offers. Or it could mean that if there are date gaps, we still look into the previous sheets.
 - The offers result order is not mentioned. From the 2 examples in the README, it seems like the results are ordered by currency (alphabetical) and Total (increasing). But that's an assumption based on a very limited set of examples.
 - All the examples and documentation have integer for weight in kg and dimensions in cm, but the proto types are double, and it's not clear whether we should use decimals and how many.
@@ -59,12 +59,12 @@ The awkward cases you found in the rules and in the sample data, and what
 you decided for each.
 
 - The sample data for AF has an overlap in the validity windows. I have decided to calculate both and return the lowest calculated price, but it could also be the case that we would choose the innermost range always, or reject the rate sheet.
-- Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight to 0.1 kg, also when calculating the chargeable weight.
+- Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight up to 0.1 kg, also when calculating the chargeable weight.
 - Dimensions are also double and the examples are int. I decided to round it to the nearest whole cm.
 - The rate sheets only have examples for USD and EUR, so I allow those and reject everything else
 - If a rate is missing, do we assume the lower rate, higher rate, or reject? Line 6 has rate_45 missing, and it's not clear whether this means it's the same as normal, or if it's a mistake.
   I decided to require all rates to be passed. To consider a lower rating we would need to find the first break before the first one that has a rate, and also consider what to do if the normal break has no rate. So validating seems reasonable, but possibly doesn't reflect real world usage.
-- There is no mention of 0 kg weight. I assume this is a valid use case (for example a letter that rounds to 0 kg) and consider the minimum charge.
+- There is no mention of 0 kg weight. I decided to round the weight always up, so in this case it would be rounded to 0.1 kg.
 - I order the results by currency and then total because it matches the examples in the README, but that's not mentioned.
 
 ## Cut scope

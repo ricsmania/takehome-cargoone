@@ -1,4 +1,4 @@
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_CEILING, Decimal
 from typing import List
 
 from quote_service.quote import Dimensions, Offer, QuoteRequest, QuoteResponse
@@ -17,10 +17,12 @@ class QuoteService:
     return []
 
   def CalculateChargeableWeight(self, dimensions: Dimensions) -> float:
-    # Decimal from str avoids float artefacts (41.65 stored as 41.6499...) flipping the rounding.
+    # Both round up, so we never charge for less than the shipment weighs or measures.
+    # Decimal from str avoids float artefacts (96.8 stored as 96.80000001) adding an extra 0.1 kg.
     length, width, height = (
-      Decimal(str(side)) for side in (dimensions.length, dimensions.width, dimensions.height)
+      Decimal(str(side)).quantize(Decimal("1"), rounding=ROUND_CEILING)
+      for side in (dimensions.length, dimensions.width, dimensions.height)
     )
-    volume = length * width * height
-    chargeable = max(Decimal(str(dimensions.weight)), volume / 6000)
-    return float(chargeable.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
+    volumetric = length * width * height / 6000
+    chargeable = max(Decimal(str(dimensions.weight)), volumetric)
+    return float(chargeable.quantize(Decimal("0.1"), rounding=ROUND_CEILING))
