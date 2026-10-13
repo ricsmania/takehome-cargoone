@@ -60,7 +60,7 @@ you decided for each.
 
 - The sample data for AF has an overlap in the validity windows. I have decided to calculate both and return the lowest calculated price, but it could also be the case that we would choose the innermost range always, or reject the rate sheet.
 - Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight up to 0.1 kg, also when calculating the chargeable weight.
-- Dimensions are also double and the examples are int. I decided to round it to the nearest whole cm.
+- Dimensions are also double and the examples are int. I decided to round it up to the nearest whole cm.
 - The rate sheets only have examples for USD and EUR, so I allow those and reject everything else
 - If a rate is missing, do we assume the lower rate, higher rate, or reject? Line 6 has rate_45 missing, and it's not clear whether this means it's the same as normal, or if it's a mistake.
   I decided to require all rates to be passed. To consider a lower rating we would need to find the first break before the first one that has a rate, and also consider what to do if the normal break has no rate. So validating seems reasonable, but possibly doesn't reflect real world usage.
@@ -76,6 +76,7 @@ What you left out on purpose, and why.
 - I would store the airlines and airports on different tables and add FKs to the rates table, so that the data is consistent
 - I didn't add any kind of dependency injection
 - I didn't add any kind of type validation such as with Pydantic
+- Defining the weight breaks as an array/list rather than named "rate_x" fields could make the calculations potentially simpler
 
 ## Time spent
 
