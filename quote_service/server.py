@@ -2,6 +2,7 @@
 
 import logging
 from concurrent import futures
+from quote_service.service import QuoteService
 
 import grpc
 
@@ -9,8 +10,7 @@ from proto import quote_pb2, quote_pb2_grpc
 
 log = logging.getLogger(__name__)
 
-
-class QuoteService(quote_pb2_grpc.QuoteServiceServicer):
+class QuoteGrpcService(quote_pb2_grpc.QuoteServiceServicer):
     def IngestRateSheet(
         self, request: quote_pb2.IngestRateSheetRequest, context: grpc.ServicerContext
     ) -> quote_pb2.IngestRateSheetResponse:
@@ -21,14 +21,13 @@ class QuoteService(quote_pb2_grpc.QuoteServiceServicer):
     ) -> quote_pb2.GetQuoteResponse:
         context.abort(grpc.StatusCode.UNIMPLEMENTED, "GetQuote is yours to build")
 
-
 def build_server(address: str = "[::]:50051") -> tuple[grpc.Server, int]:
     """Build an unstarted server. Returns it with the port it bound to (useful with port 0)."""
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=8),
         options=[("grpc.so_reuseport", 0)],  # fail loudly if the port is taken
     )
-    quote_pb2_grpc.add_QuoteServiceServicer_to_server(QuoteService(), server)
+    quote_pb2_grpc.add_QuoteServiceServicer_to_server(QuoteGrpcService(), server)
     port = server.add_insecure_port(address)
     return server, port
 
