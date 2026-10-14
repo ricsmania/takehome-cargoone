@@ -120,6 +120,7 @@ def test_reingesting_an_airline_replaces_its_rates(stub):
 @pytest.mark.parametrize("request_fields, message", [
     ({"weight": -10.0}, "weight must be >= 0"),
     ({"dims": (120.0, -80.0, 60.0)}, "width must be >= 0"),
+    ({"weight": 1e26}, "weight must be <= 100000"),
     ({"shipping_date": "10/02/2026"}, "shipping_date must be an ISO 8601 date"),
     ({"origin": "FRANKFURT"}, "invalid origin: 'FRANKFURT'"),
     ({"destination": "jfk"}, "invalid destination: 'jfk'"),

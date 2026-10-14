@@ -1,7 +1,6 @@
 """Where rates are stored. Rating never imports this module: the service passes rates in."""
 
 import threading
-from datetime import date
 from typing import Protocol
 
 from quote_service.rate import Rate
@@ -12,8 +11,8 @@ class RateRepository(Protocol):
         """Drops every stored rate of the airline and stores these instead."""
         ...
 
-    def get_rates(self, origin: str, destination: str, shipping_date: date) -> list[Rate]:
-        """Rates for the lane whose validity window contains shipping_date (both ends inclusive)."""
+    def get_rates(self, origin: str, destination: str) -> list[Rate]:
+        """Every stored rate for the lane, whatever its validity window."""
         ...
 
 
@@ -26,13 +25,9 @@ class InMemoryRateRepository:
         with self._lock:
             self._rates_by_airline[airline] = list(rates)
 
-    def get_rates(self, origin: str, destination: str, shipping_date: date) -> list[Rate]:
+    def get_rates(self, origin: str, destination: str) -> list[Rate]:
         with self._lock:
             all_rates = [rate for rates in self._rates_by_airline.values() for rate in rates]
         return [
-            rate
-            for rate in all_rates
-            if rate.origin == origin
-            and rate.destination == destination
-            and rate.valid_from <= shipping_date <= rate.valid_to
+            rate for rate in all_rates if rate.origin == origin and rate.destination == destination
         ]

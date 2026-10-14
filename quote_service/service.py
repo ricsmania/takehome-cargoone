@@ -9,24 +9,34 @@ from quote_service.rate_repository import RateRepository
 from quote_service.rate_sheet import parse_rate_sheet
 from quote_service.reference_data import is_airport_code
 
+# Sanity limits, well above any real air cargo shipment. They keep absurd input from overflowing
+# Decimal's precision when chargeable weight is rounded.
+MAX_WEIGHT_KG = Decimal(100_000)
+MAX_SIDE_CM = Decimal(10_000)
+
 
 class QuoteService:
     def __init__(self, repository: RateRepository) -> None:
         self._repository = repository
 
     def ingest_rate_sheet(self, csv_content: str) -> int:
-        """Replaces all rates of each airline in the sheet. Returns the number of rows stored."""
+        """Replaces all rates of the sheet's airline. Returns the number of rows stored.
+
+        A sheet holds one airline's rates (README), so the first row names the airline.
+        """
         rates = parse_rate_sheet(csv_content)
-        for airline in {rate.airline for rate in rates}:
-            airline_rates = [rate for rate in rates if rate.airline == airline]
-            self._repository.replace_airline_rates(airline, airline_rates)
+        self._repository.replace_airline_rates(rates[0].airline, rates)
         return len(rates)
 
     def get_quote(self, shipment: Shipment) -> list[Offer]:
         validate_shipment(shipment)
-        rates = self._repository.get_rates(
-            shipment.origin, shipment.destination, shipment.shipping_date
-        )
+        lane_rates = self._repository.get_rates(shipment.origin, shipment.destination)
+        # Both ends of the validity window are inclusive.
+        rates = [
+            rate
+            for rate in lane_rates
+            if rate.valid_from <= shipment.shipping_date <= rate.valid_to
+        ]
         return calculate_offers(shipment, rates)
 
 
@@ -35,17 +45,19 @@ def validate_shipment(shipment: Shipment) -> None:
     for field, airport in (("origin", shipment.origin), ("destination", shipment.destination)):
         if not is_airport_code(airport):
             errors.append(f"invalid {field}: {airport!r}")
-    errors += validate_non_negative("weight", shipment.weight_kg)
-    errors += validate_non_negative("length", shipment.dimensions.length_cm)
-    errors += validate_non_negative("width", shipment.dimensions.width_cm)
-    errors += validate_non_negative("height", shipment.dimensions.height_cm)
+    errors += validate_measure("weight", shipment.weight_kg, MAX_WEIGHT_KG)
+    errors += validate_measure("length", shipment.dimensions.length_cm, MAX_SIDE_CM)
+    errors += validate_measure("width", shipment.dimensions.width_cm, MAX_SIDE_CM)
+    errors += validate_measure("height", shipment.dimensions.height_cm, MAX_SIDE_CM)
     if errors:
         raise InvalidInputError("; ".join(errors))
 
 
-def validate_non_negative(name: str, value: Decimal) -> list[str]:
+def validate_measure(name: str, value: Decimal, maximum: Decimal) -> list[str]:
     if not value.is_finite():
         return [f"{name} must be a finite number"]
     if value < 0:
         return [f"{name} must be >= 0"]
+    if value > maximum:
+        return [f"{name} must be <= {maximum}"]
     return []

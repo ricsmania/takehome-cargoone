@@ -106,3 +106,14 @@ def test_invalid_row_values(row, error):
 
     # then the error names the line and the field
     assert errors == [f"line 2 - {error}"]
+
+
+def test_sheet_without_rows_is_rejected():
+    # given a sheet with only a header
+    csv_content = f"{HEADER}\n"
+
+    # when it is parsed
+    errors = sheet_errors(csv_content)
+
+    # then it is rejected: with no rows there is no airline to replace
+    assert errors == ["the sheet has no rate rows"]

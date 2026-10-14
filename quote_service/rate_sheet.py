@@ -37,6 +37,8 @@ def parse_rate_sheet(csv_content: str) -> list[Rate]:
         else:
             rates.append(to_rate(row))
 
+    if not rates and not errors:
+        errors.append("the sheet has no rate rows")
     if errors:
         raise RateSheetError(errors)
     return rates
