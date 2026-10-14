@@ -1,7 +1,9 @@
-"""README worked examples: FRA-JFK on 2026-02-10, with the 4 sample sheets' applicable rows."""
+"""Rating against the FRA-JFK rows of the 4 sample sheets that are valid on 2026-02-10."""
 
 from datetime import date
 from decimal import Decimal
+
+import pytest
 
 from quote_service.pricing import calculate_offers
 from quote_service.quote import Dimensions, Shipment
@@ -86,3 +88,62 @@ def test_small_shipment_is_raised_to_min_charge():
 
     # then the total is LH's min_charge
     assert lines == [("LH", "EUR", "normal", "90.00")]
+
+
+@pytest.mark.parametrize("weight, weight_break, total", [
+    ("45", "45", "171.00"),     # 45 x 3.80
+    ("100", "100", "340.00"),   # 100 x 3.40
+    ("300", "300", "885.00"),   # 300 x 2.95
+    ("500", "500", "1300.00"),  # 500 x 2.60
+])
+def test_weight_on_a_break_minimum_lands_in_that_break(weight, weight_break, total):
+    # given a shipment weighing exactly a break's minimum
+    to_quote = shipment(weight, "10", "10", "10")
+
+    # when the LH offer is calculated
+    lines = offer_lines(to_quote, [LH])
+
+    # then that break is used at the chargeable weight
+    assert lines == [("LH", "EUR", weight_break, total)]
+
+
+def test_as_agreed_rating_moves_up_from_just_below_a_break():
+    # given a 44.9 kg shipment, in the normal break: 44.9 x 4.10 = 184.09 EUR
+    to_quote = shipment("44.9", "10", "10", "10")
+
+    # when the LH offer is calculated
+    lines = offer_lines(to_quote, [LH])
+
+    # then the 45 break priced at 45 kg is cheaper: 45 x 3.80 = 171.00 EUR
+    assert lines == [("LH", "EUR", "45", "171.00")]
+
+
+def test_zero_weight_gets_min_charge():
+    # given a 0 kg shipment with no dimensions
+    to_quote = shipment("0", "0", "0", "0")
+
+    # when offers are calculated against all 4 sample rows
+    lines = offer_lines(to_quote, ALL_RATES)
+
+    # then every airline quotes its min_charge
+    assert lines == [
+        ("LH", "EUR", "normal", "90.00"),
+        ("AF", "EUR", "normal", "100.00"),
+        ("QR", "USD", "normal", "120.00"),
+        ("EK", "USD", "normal", "150.00"),
+    ]
+
+
+def test_overlapping_rows_of_one_airline_give_one_offer_at_the_cheapest():
+    # given both AF CDG-JFK rows, which overlap in March 2026
+    af_full_half_year = rate("AF", "EUR", "2026-01-01", "2026-06-30", "85.00",
+                             "4.00", "3.70", "3.30", "2.90", "2.55")
+    af_march = rate("AF", "EUR", "2026-03-01", "2026-03-31", "85.00",
+                    "3.60", "3.30", "3.00", "2.60", "2.30")
+    to_quote = shipment("96", "10", "10", "10")
+
+    # when offers are calculated against both rows
+    lines = offer_lines(to_quote, [af_full_half_year, af_march])
+
+    # then AF gets one offer, from the March row: 100 x 3.00 (the other row gives 100 x 3.30)
+    assert lines == [("AF", "EUR", "100", "300.00")]
