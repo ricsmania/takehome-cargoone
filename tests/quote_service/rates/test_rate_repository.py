@@ -18,10 +18,6 @@ def rate(airline: str, origin: str, destination: str, valid_from: str, valid_to:
                 rate_300=price, rate_500=price)
 
 
-QR_FRA_JFK = rate("QR", "FRA", "JFK", "2026-01-15", "2026-02-28")
-FEB_10 = date(2026, 2, 10)
-
-
 @pytest.mark.parametrize("shipping_date, found", [
     ("2026-01-14", False),
     ("2026-01-15", True),
@@ -30,23 +26,25 @@ FEB_10 = date(2026, 2, 10)
 ])
 def test_validity_window_includes_both_ends(shipping_date, found):
     # given QR's FRA-JFK row, valid 2026-01-15 to 2026-02-28
+    qr = rate("QR", "FRA", "JFK", "2026-01-15", "2026-02-28")
     repository = InMemoryRateRepository()
-    repository.replace_airline_rates("QR", [QR_FRA_JFK])
+    repository.replace_airline_rates("QR", [qr])
 
     # when FRA-JFK is looked up on a date around the window's ends
     rates = repository.get_rates("FRA", "JFK", date.fromisoformat(shipping_date))
 
     # then the row is found only inside the window, ends included
-    assert (rates == [QR_FRA_JFK]) == found
+    assert (rates == [qr]) == found
 
 
 def test_lanes_have_a_direction():
-    # given only a FRA-JFK row
+    # given only a FRA-JFK row, valid 2026-01-15 to 2026-02-28
+    qr = rate("QR", "FRA", "JFK", "2026-01-15", "2026-02-28")
     repository = InMemoryRateRepository()
-    repository.replace_airline_rates("QR", [QR_FRA_JFK])
+    repository.replace_airline_rates("QR", [qr])
 
     # when JFK-FRA is looked up on a date inside the window
-    rates = repository.get_rates("JFK", "FRA", FEB_10)
+    rates = repository.get_rates("JFK", "FRA", date(2026, 2, 10))
 
     # then nothing is found
     assert rates == []
@@ -70,14 +68,15 @@ def test_overlapping_rows_are_all_returned():
 def test_replacing_an_airline_drops_its_old_rates_only():
     # given LH and QR rates on FRA-JFK
     old_lh = rate("LH", "FRA", "JFK", "2026-01-01", "2026-03-31")
+    qr = rate("QR", "FRA", "JFK", "2026-01-15", "2026-02-28")
     repository = InMemoryRateRepository()
     repository.replace_airline_rates("LH", [old_lh])
-    repository.replace_airline_rates("QR", [QR_FRA_JFK])
+    repository.replace_airline_rates("QR", [qr])
 
     # when LH's rates are replaced by a row for April to June
     new_lh = rate("LH", "FRA", "JFK", "2026-04-01", "2026-06-30")
     repository.replace_airline_rates("LH", [new_lh])
 
     # then the old LH row is gone on 2026-02-10 and QR is untouched
-    assert repository.get_rates("FRA", "JFK", FEB_10) == [QR_FRA_JFK]
+    assert repository.get_rates("FRA", "JFK", date(2026, 2, 10)) == [qr]
     assert repository.get_rates("FRA", "JFK", date(2026, 5, 1)) == [new_lh]
