@@ -9,7 +9,7 @@ import pytest
 from quote_service.domain.shipment import Dimensions, Shipment
 from quote_service.errors import InvalidInputError
 from quote_service.service import QuoteService
-from quote_service.storage.in_memory import InMemoryRateRepository
+from quote_service.storage.in_memory_rate_repository import InMemoryRateRepository
 
 RATE_SHEETS = Path(__file__).parents[2] / "rate_sheets"
 

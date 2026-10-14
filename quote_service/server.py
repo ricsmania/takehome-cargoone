@@ -12,7 +12,7 @@ from quote_service.domain.offer import Offer
 from quote_service.domain.shipment import Dimensions, Shipment
 from quote_service.errors import InvalidInputError
 from quote_service.service import QuoteService
-from quote_service.storage.in_memory import InMemoryRateRepository
+from quote_service.storage.in_memory_rate_repository import InMemoryRateRepository
 
 log = logging.getLogger(__name__)
 

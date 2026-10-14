@@ -176,7 +176,7 @@ quote_service/rating/                       pure rating rules, depend only on do
 quote_service/ingestion/csv_rate_sheet.py   CSV parsing and validation
 quote_service/storage/                      the storage seam
   rate_repository.py                        RateRepository, the interface the service uses
-  in_memory.py                              the in-memory store
+  in_memory_rate_repository.py              the in-memory store
 quote_service/client.py                     CLI client for manual testing
 rate_sheets/                                sample data, one CSV per airline, one malformed
 tests/                                      pytest, unit tests and an in-process server fixture

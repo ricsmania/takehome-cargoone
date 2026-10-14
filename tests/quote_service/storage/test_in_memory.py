@@ -6,7 +6,7 @@ from decimal import Decimal
 import pytest
 
 from quote_service.domain.rate import Rate
-from quote_service.storage.in_memory import InMemoryRateRepository
+from quote_service.storage.in_memory_rate_repository import InMemoryRateRepository
 
 
 def rate(airline: str, origin: str, destination: str, valid_from: str, valid_to: str) -> Rate:
