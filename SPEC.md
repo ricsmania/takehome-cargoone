@@ -1,12 +1,6 @@
 # SPEC
 
-Fill this in before you write code. What it says matters more than when it
-landed. Delete these prompts as you fill the sections in. Bullets are fine.
-
 ## Problem understanding
-
-What the service does, in your own words. Which rules in the README are
-sharp, which are fuzzy, and how you read the fuzzy ones.
 
 The service should provide quotes for air shipments based on chargeable weight (max of actual weight and H x W x L / 6000), origin, and destination, on specific date. The airline has a rate sheet with rows per origin, destination, and weight breaks.
 Chargeable weight break can be:
@@ -37,6 +31,7 @@ Fuzzy rules:
 
 ## Design decisions
 
+- I decided to use Python even though I'm not proficient in it to use the opportunity to practice and learn more
 - All the calculations are split into specific files with pure functions
 - When ingesting the rates, multiple errors are returned instead of stopping on the first
 - No extra dependecies were added, for example for validation
@@ -44,9 +39,6 @@ Fuzzy rules:
 - Storage is in-memory but with a clear boundary and an interface so it can be easily replaced
 
 ## Acceptance criteria
-
-Testable statements. "Given a 96 kg chargeable shipment FRA-JFK on 2026-02-10,
-LH quotes 340.00 EUR at the 100 break" is one. "Quoting works" is not.
 
 - Given the README worked examples (FRA-JFK on 2026-02-10, all 4 sample sheets), the offers match the README tables exactly
 - Given a 100 kg shipment FRA-JFK on 2026-02-10, LH quotes 340.00 EUR at the 100 break (a weight on a break minimum belongs to that break)
@@ -63,9 +55,6 @@ LH quotes 340.00 EUR at the 100 break" is one. "Quoting works" is not.
 
 ## Edge cases
 
-The awkward cases you found in the rules and in the sample data, and what
-you decided for each.
-
 - The sample data for AF has an overlap in the validity windows. I have decided to calculate both and return the lowest calculated price, but it could also be the case that we would choose the innermost range always, or reject the rate sheet.
 - Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight up to 0.1 kg, also when calculating the chargeable weight.
 - Dimensions are also double and the examples are int. I decided to round it up to the nearest whole cm.
@@ -75,27 +64,18 @@ you decided for each.
 - There is no mention of 0 kg weight. I decided to accept it and apply the minimum charge.
 - I order the results by currency and then total because it matches the examples in the README, but that's not mentioned.
 - If multiple breaks have the same final price, I return the lowest one.
--
 
 ## Cut scope
 
-What you left out on purpose, and why.
-
 - I always replace the rate sheets with the latest version. In a real application, I would keep all rates, also past ones marked as inactive, so that the data can be used for logging and debugging purposes in case there is an issue with a past request. I cut it because it wasn't mentioned, and the rules around rate sheets are fuzzy.
 - Probably it would make sense to get the currency on the request, and convert to the consumer's currency, so they can directly compare prices. Then there would be other things to consider such as VAT. I cut it because it wasn't mentioned.
-- For validating the airport code I only check if it's a 3 character string, but of course in a real application it would make sense to store the full list. I cut it because I don't know the source of the list.
+- For validating the airport code I only check if it has 3 uppercase characters, but of course in a real application it would make sense to store the full list. I cut it because I don't know the source of the list.
 - For the currencies I only check if it's EUR or USD. I don't know which currencies the service should support.
-- I didn't add any kind of type validation such as with Pydantic, because the README said to focus on the core logic, and I felt this would be going too deep into validation.
-- Defining the weight breaks as an array/list rather than named "rate_x" fields could make the calculations potentially simpler
+- I didn't add any kind of type validation such as with Pydantic, because I felt this would be overkill for a challenge.
+- Defining the weight breaks as an array/list everywhere rather than named "rate_x" fields could make the calculations potentially simpler
 - The server assumes one CSV per airline, and I didn't add validation to check because the rule is fuzzy
+- I didn't add any kind of database. My first idea was to use Postgres and Docker Compose for local testing, but it would add too much complexity.
 
 ## Time spent
 
-Honest number of hours, roughly.
-
-## TODO
-
-Validate the date range
-Validate airport code
-Validate currencies
-Validate that rates are positive
+Around 5 hours. Since I haven't used Python in a while, I also took the chance to practice.
