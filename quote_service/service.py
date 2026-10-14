@@ -6,9 +6,9 @@ from quote_service.domain.airports import is_airport_code
 from quote_service.domain.offer import Offer
 from quote_service.domain.shipment import Shipment
 from quote_service.errors import InvalidInputError
-from quote_service.rates.rate_repository import RateRepository
-from quote_service.rates.rate_sheet import parse_rate_sheet
+from quote_service.ingestion.csv_rate_sheet import parse_rate_sheet
 from quote_service.rating.offers import calculate_offers
+from quote_service.storage.rate_repository import RateRepository
 
 # Sanity limits, well above any real air cargo shipment. They keep absurd input from overflowing
 # Decimal's precision when chargeable weight is rounded.

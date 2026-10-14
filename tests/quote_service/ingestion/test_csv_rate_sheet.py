@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from quote_service.errors import RateSheetError
-from quote_service.rates.rate_sheet import parse_rate_sheet
+from quote_service.ingestion.csv_rate_sheet import parse_rate_sheet
 
 RATE_SHEETS = Path(__file__).parents[3] / "rate_sheets"
 HEADER = (

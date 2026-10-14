@@ -11,8 +11,8 @@ from proto import quote_pb2, quote_pb2_grpc
 from quote_service.domain.offer import Offer
 from quote_service.domain.shipment import Dimensions, Shipment
 from quote_service.errors import InvalidInputError
-from quote_service.rates.rate_repository import InMemoryRateRepository
 from quote_service.service import QuoteService
+from quote_service.storage.in_memory import InMemoryRateRepository
 
 log = logging.getLogger(__name__)
 
