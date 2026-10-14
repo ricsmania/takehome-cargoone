@@ -65,7 +65,11 @@ Fuzzy rules:
 - I decided to use Python even though I'm not proficient in it to use the
   opportunity to practice and learn more
 - All the calculations are split into specific files with pure functions, and
-  the service has the glue code to connect it to the gRPC handlers
+  the service has the glue code to connect the calculation, the data operations
+  from the repository, and the gRPC handlers
+- Bad input such as invalid CSVs and negative weights are returned as INVALID_ARGUMENT.
+  No matching rate returns OK and an empty list. Unexpected server errors map to
+  UNKNOWN.
 - When ingesting the rates, multiple errors are returned instead of stopping
   on the first, except if the header itself is invalid
 - No extra dependencies were added, for example for validation
