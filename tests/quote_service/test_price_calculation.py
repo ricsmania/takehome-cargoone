@@ -1,9 +1,9 @@
 """README worked examples: FRA-JFK on 2026-02-10, with the 4 sample sheets' applicable rows."""
 
 
+from quote_service.pricing import calculate_offers
 from quote_service.quote import Dimensions
 from quote_service.rate import Rate
-from quote_service.service import QuoteService
 
 # The FRA-JFK row from each sample sheet that is valid on 2026-02-10.
 LH = Rate(airline="LH", origin="FRA", destination="JFK", currency="EUR",
@@ -24,7 +24,7 @@ ALL_RATES = [QR, EK, AF, LH]
 
 def offer_lines(dimensions: Dimensions, rates: list[Rate]) -> list[tuple]:
     """Offers as (airline, currency, weight_break, total) lines, in the order returned."""
-    offers = QuoteService().CalculateOffers(dimensions, rates)
+    offers = calculate_offers(dimensions, rates)
     return [
         (offer.airline, offer.currency, offer.weight_break, round(offer.total_price, 2))
         for offer in offers

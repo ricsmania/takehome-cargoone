@@ -4,5 +4,6 @@ from quote_service.rate import Rate
 
 
 class RateRepository:
-  def GetRates(self, origin: str, destination: str, shipping_date: str) -> List[Rate]:
+  def get_rates(self, origin: str, destination: str, shipping_date: str) -> List[Rate]:
+    """Rates for the lane whose validity window contains shipping_date (both ends inclusive)."""
     return    
