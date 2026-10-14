@@ -57,6 +57,11 @@ that was the source of truth, and I didn't want to have duplicate info.
 
 ## What you kept without fully understanding
 
+When writing the function to calculate the chargeable weight it wrote this:
+`return max(weight_kg, volumetric).quantize(Decimal(1), rounding=ROUND_CEILING)`
+
+The tests passed and I didn't think much of it. But then I understood that quantize is just the rounding function.
+
 ## What you have tried on your own
 
 Whether or not you used an agent for this exercise: what have you tried with

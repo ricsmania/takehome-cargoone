@@ -37,6 +37,7 @@ Fuzzy rules:
 - No extra dependecies were added, for example for validation
 - `Decimal` and `date` types are used inside the service, and converted at the gRPC boundary
 - Storage is in-memory but with a clear boundary and an interface so it can be easily replaced
+- The rule to check which rates match the shipment date was done in the repository, because in a real application there will potentially be thousands of different rates, and already filtering on the database would be faster and save memory
 
 ## Acceptance criteria
 
