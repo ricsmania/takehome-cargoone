@@ -6,8 +6,10 @@ from quote_service.pricing.shipment import Dimensions
 
 VOLUMETRIC_DIVISOR = Decimal(6000)
 
+
 def round_up_to_whole_unit(value: Decimal) -> Decimal:
     return value.quantize(Decimal(1), rounding=ROUND_CEILING)
+
 
 def calculate_chargeable_weight(weight_kg: Decimal, dimensions: Dimensions) -> Decimal:
     # Sides and the result round up to whole cm and kg, so we never charge for less than the

@@ -10,12 +10,32 @@ from quote_service.pricing.shipment import Dimensions, Shipment
 from quote_service.rates.rate import Rate
 
 
-def rate(airline: str, currency: str, valid_from: str, valid_to: str, min_charge: str,
-         normal: str, r45: str, r100: str, r300: str, r500: str) -> Rate:
-    return Rate(airline=airline, origin="FRA", destination="JFK", currency=currency,
-                valid_from=date.fromisoformat(valid_from), valid_to=date.fromisoformat(valid_to),
-                min_charge=Decimal(min_charge), rate_normal=Decimal(normal), rate_45=Decimal(r45),
-                rate_100=Decimal(r100), rate_300=Decimal(r300), rate_500=Decimal(r500))
+def rate(
+    airline: str,
+    currency: str,
+    valid_from: str,
+    valid_to: str,
+    min_charge: str,
+    normal: str,
+    r45: str,
+    r100: str,
+    r300: str,
+    r500: str,
+) -> Rate:
+    return Rate(
+        airline=airline,
+        origin="FRA",
+        destination="JFK",
+        currency=currency,
+        valid_from=date.fromisoformat(valid_from),
+        valid_to=date.fromisoformat(valid_to),
+        min_charge=Decimal(min_charge),
+        rate_normal=Decimal(normal),
+        rate_45=Decimal(r45),
+        rate_100=Decimal(r100),
+        rate_300=Decimal(r300),
+        rate_500=Decimal(r500),
+    )
 
 
 # The FRA-JFK row from each sample sheet that is valid on 2026-02-10.
@@ -72,10 +92,10 @@ def test_75_kg_shipment_break_differs_per_airline():
 
     # then only EK is cheaper at the higher break
     assert lines == [
-        ("LH", "EUR", "45", "285.00"),   # 75 x 3.80, the 100 break is 340.00
-        ("AF", "EUR", "45", "303.75"),   # 75 x 4.05, the 100 break is 365.00
+        ("LH", "EUR", "45", "285.00"),  # 75 x 3.80, the 100 break is 340.00
+        ("AF", "EUR", "45", "303.75"),  # 75 x 4.05, the 100 break is 365.00
         ("EK", "USD", "100", "320.00"),  # 75 x 4.60 = 345.00, the 100 break is 100 x 3.20
-        ("QR", "USD", "45", "322.50"),   # 75 x 4.30, the 100 break is 360.00
+        ("QR", "USD", "45", "322.50"),  # 75 x 4.30, the 100 break is 360.00
     ]
 
 
@@ -90,12 +110,15 @@ def test_small_shipment_is_raised_to_min_charge():
     assert lines == [("LH", "EUR", "normal", "90.00")]
 
 
-@pytest.mark.parametrize("weight, weight_break, total", [
-    ("45", "45", "171.00"),     # 45 x 3.80
-    ("100", "100", "340.00"),   # 100 x 3.40
-    ("300", "300", "885.00"),   # 300 x 2.95
-    ("500", "500", "1300.00"),  # 500 x 2.60
-])
+@pytest.mark.parametrize(
+    "weight, weight_break, total",
+    [
+        ("45", "45", "171.00"),  # 45 x 3.80
+        ("100", "100", "340.00"),  # 100 x 3.40
+        ("300", "300", "885.00"),  # 300 x 2.95
+        ("500", "500", "1300.00"),  # 500 x 2.60
+    ],
+)
 def test_weight_on_a_break_minimum_lands_in_that_break(weight, weight_break, total):
     # given a shipment weighing exactly a break's minimum
     to_quote = shipment(weight, "10", "10", "10")
@@ -136,10 +159,12 @@ def test_zero_weight_gets_min_charge():
 
 def test_overlapping_rows_of_one_airline_give_one_offer_at_the_cheapest():
     # given both AF CDG-JFK rows, which overlap in March 2026
-    af_full_half_year = rate("AF", "EUR", "2026-01-01", "2026-06-30", "85.00",
-                             "4.00", "3.70", "3.30", "2.90", "2.55")
-    af_march = rate("AF", "EUR", "2026-03-01", "2026-03-31", "85.00",
-                    "3.60", "3.30", "3.00", "2.60", "2.30")
+    af_full_half_year = rate(
+        "AF", "EUR", "2026-01-01", "2026-06-30", "85.00", "4.00", "3.70", "3.30", "2.90", "2.55"
+    )
+    af_march = rate(
+        "AF", "EUR", "2026-03-01", "2026-03-31", "85.00", "3.60", "3.30", "3.00", "2.60", "2.30"
+    )
     to_quote = shipment("96", "10", "10", "10")
 
     # when offers are calculated against both rows

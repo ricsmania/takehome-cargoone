@@ -36,7 +36,7 @@ def test_sample_sheets_parse(airline, rows):
 
 
 def test_row_values_are_typed():
-    # given the LH row from the README
+    # given a row with valid values
     csv_content = f"{HEADER}\nLH,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60\n"
 
     # when it is parsed
@@ -83,20 +83,35 @@ def test_malformed_rows_are_reported_with_line_numbers():
     ]
 
 
-@pytest.mark.parametrize("row, error", [
-    ("LH,FRA,JFK,GBP,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60",
-     "unsupported currency: GBP"),
-    ("LH,FRA,JFK,EUR,2026-13-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60",
-     "valid_from must be an ISO 8601 date, got 2026-13-01"),
-    ("LH,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,abc,3.80,3.40,2.95,2.60",
-     "rate_normal must be > 0"),
-    ("LH,FRA,JFK,EUR,2026-01-01,2026-03-31,-1,4.10,3.80,3.40,2.95,2.60",
-     "min_charge must be >= 0"),
-    ("Lufthansa,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60",
-     "invalid airline: Lufthansa"),
-    ("LH,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60,9.99",
-     "more values than header columns"),
-])
+@pytest.mark.parametrize(
+    "row, error",
+    [
+        (
+            "LH,FRA,JFK,GBP,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60",
+            "unsupported currency: GBP",
+        ),
+        (
+            "LH,FRA,JFK,EUR,2026-13-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60",
+            "valid_from must be an ISO 8601 date, got 2026-13-01",
+        ),
+        (
+            "LH,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,abc,3.80,3.40,2.95,2.60",
+            "rate_normal must be > 0",
+        ),
+        (
+            "LH,FRA,JFK,EUR,2026-01-01,2026-03-31,-1,4.10,3.80,3.40,2.95,2.60",
+            "min_charge must be >= 0",
+        ),
+        (
+            "Lufthansa,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60",
+            "invalid airline: Lufthansa",
+        ),
+        (
+            "LH,FRA,JFK,EUR,2026-01-01,2026-03-31,90.00,4.10,3.80,3.40,2.95,2.60,9.99",
+            "more values than header columns",
+        ),
+    ],
+)
 def test_invalid_row_values(row, error):
     # given a sheet with one bad value on line 2
     csv_content = f"{HEADER}\n{row}\n"

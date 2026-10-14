@@ -37,7 +37,7 @@ def calculate_offer(chargeable_weight: Decimal, rate: Rate) -> Offer:
 
     # As-agreed rating: a higher break priced at its own minimum weight wins if cheaper.
     # On a tie the lower break is kept.
-    for name, minimum_kg, rate_per_kg in breaks[start + 1:]:
+    for name, minimum_kg, rate_per_kg in breaks[start + 1 :]:
         total = minimum_kg * rate_per_kg
         if total < best_total:
             best_break, best_rate, best_total = name, rate_per_kg, total

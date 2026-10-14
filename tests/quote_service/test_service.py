@@ -1,4 +1,4 @@
-"""Quote service: input limits, with an in-memory repository."""
+"""Quote service: input limits and which airlines quote, with an in-memory repository."""
 
 from datetime import date
 from decimal import Decimal
@@ -21,8 +21,7 @@ def service_with(*airlines: str) -> QuoteService:
     return service
 
 
-def shipment(shipping_date: str = "2026-02-10", weight: str = "96",
-             side: str = "10") -> Shipment:
+def shipment(shipping_date: str = "2026-02-10", weight: str = "96", side: str = "10") -> Shipment:
     return Shipment(
         origin="FRA",
         destination="JFK",
@@ -32,11 +31,14 @@ def shipment(shipping_date: str = "2026-02-10", weight: str = "96",
     )
 
 
-@pytest.mark.parametrize("weight, side, message", [
-    ("100001", "10", "weight must be <= 100000"),
-    ("96", "10001", "length must be <= 10000"),
-    ("1E+26", "10", "weight must be <= 100000"),
-])
+@pytest.mark.parametrize(
+    "weight, side, message",
+    [
+        ("100001", "10", "weight must be <= 100000"),
+        ("96", "10001", "length must be <= 10000"),
+        ("1E+26", "10", "weight must be <= 100000"),
+    ],
+)
 def test_measures_above_the_limits_are_rejected(weight, side, message):
     # given a shipment heavier or larger than any real air cargo shipment
     service = service_with("LH")
@@ -58,3 +60,14 @@ def test_measures_on_the_limits_are_quoted():
 
     # then LH quotes it
     assert [offer.airline for offer in offers] == ["LH"]
+
+
+def test_airlines_without_a_valid_rate_get_no_offer():
+    # given all 4 sample sheets, where QR's FRA-JFK rate ends on 2026-02-28
+    service = service_with("LH", "AF", "EK", "QR")
+
+    # when FRA-JFK is quoted on 2026-03-01
+    offers = service.get_quote(shipment(shipping_date="2026-03-01", weight="80"))
+
+    # then QR is left out and the other airlines still quote
+    assert sorted(offer.airline for offer in offers) == ["AF", "EK", "LH"]

@@ -12,18 +12,31 @@ from quote_service.rates.rate_repository import InMemoryRateRepository
 def rate(airline: str, origin: str, destination: str, valid_from: str, valid_to: str) -> Rate:
     """A rate whose prices do not matter to the lookup."""
     price = Decimal("1.00")
-    return Rate(airline=airline, origin=origin, destination=destination, currency="EUR",
-                valid_from=date.fromisoformat(valid_from), valid_to=date.fromisoformat(valid_to),
-                min_charge=price, rate_normal=price, rate_45=price, rate_100=price,
-                rate_300=price, rate_500=price)
+    return Rate(
+        airline=airline,
+        origin=origin,
+        destination=destination,
+        currency="EUR",
+        valid_from=date.fromisoformat(valid_from),
+        valid_to=date.fromisoformat(valid_to),
+        min_charge=price,
+        rate_normal=price,
+        rate_45=price,
+        rate_100=price,
+        rate_300=price,
+        rate_500=price,
+    )
 
 
-@pytest.mark.parametrize("shipping_date, found", [
-    ("2026-01-14", False),
-    ("2026-01-15", True),
-    ("2026-02-28", True),
-    ("2026-03-01", False),
-])
+@pytest.mark.parametrize(
+    "shipping_date, found",
+    [
+        ("2026-01-14", False),
+        ("2026-01-15", True),
+        ("2026-02-28", True),
+        ("2026-03-01", False),
+    ],
+)
 def test_validity_window_includes_both_ends(shipping_date, found):
     # given QR's FRA-JFK row, valid 2026-01-15 to 2026-02-28
     qr = rate("QR", "FRA", "JFK", "2026-01-15", "2026-02-28")

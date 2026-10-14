@@ -23,17 +23,25 @@ def ingest_samples(stub) -> None:
         ingest(stub, (RATE_SHEETS / f"{airline}.csv").read_text())
 
 
-def quote(stub, origin="FRA", destination="JFK", weight=80.0, dims=(120.0, 80.0, 60.0),
-          shipping_date="2026-02-10") -> list[tuple]:
+def quote(
+    stub,
+    origin="FRA",
+    destination="JFK",
+    weight=80.0,
+    dims=(120.0, 80.0, 60.0),
+    shipping_date="2026-02-10",
+) -> list[tuple]:
     """Offers as (airline, total, currency, weight_break) lines, in the order returned."""
     length, width, height = dims
-    response = stub.GetQuote(quote_pb2.GetQuoteRequest(
-        origin=origin,
-        destination=destination,
-        weight_kg=weight,
-        dimensions=quote_pb2.Dimensions(length_cm=length, width_cm=width, height_cm=height),
-        shipping_date=shipping_date,
-    ))
+    response = stub.GetQuote(
+        quote_pb2.GetQuoteRequest(
+            origin=origin,
+            destination=destination,
+            weight_kg=weight,
+            dimensions=quote_pb2.Dimensions(length_cm=length, width_cm=width, height_cm=height),
+            shipping_date=shipping_date,
+        )
+    )
     return [
         (offer.airline, offer.total_price, offer.currency, offer.weight_break)
         for offer in response.offers
@@ -78,7 +86,6 @@ def test_well_formed_airport_without_rates_gives_no_offers(stub):
     assert offers == []
 
 
-
 def test_date_outside_every_window_gives_no_offers(stub):
     # given the AF sheet, whose CDG-JFK rows end on 2026-06-30
     ingest(stub, (RATE_SHEETS / "AF.csv").read_text())
@@ -117,14 +124,17 @@ def test_reingesting_an_airline_replaces_its_rates(stub):
     assert [offer[0] for offer in offers] == ["AF", "EK", "QR"]
 
 
-@pytest.mark.parametrize("request_fields, message", [
-    ({"weight": -10.0}, "weight must be >= 0"),
-    ({"dims": (120.0, -80.0, 60.0)}, "width must be >= 0"),
-    ({"weight": 1e26}, "weight must be <= 100000"),
-    ({"shipping_date": "10/02/2026"}, "shipping_date must be an ISO 8601 date"),
-    ({"origin": "FRANKFURT"}, "invalid origin: 'FRANKFURT'"),
-    ({"destination": "jfk"}, "invalid destination: 'jfk'"),
-])
+@pytest.mark.parametrize(
+    "request_fields, message",
+    [
+        ({"weight": -10.0}, "weight must be >= 0"),
+        ({"dims": (120.0, -80.0, 60.0)}, "width must be >= 0"),
+        ({"weight": 1e26}, "weight must be <= 100000"),
+        ({"shipping_date": "10/02/2026"}, "shipping_date must be an ISO 8601 date"),
+        ({"origin": "FRANKFURT"}, "invalid origin: 'FRANKFURT'"),
+        ({"destination": "jfk"}, "invalid destination: 'jfk'"),
+    ],
+)
 def test_invalid_quote_requests(stub, request_fields, message):
     # given a quote request with one bad field
     # when it is sent

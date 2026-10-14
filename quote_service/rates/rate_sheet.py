@@ -12,7 +12,13 @@ from quote_service.reference_data import CURRENCIES, is_airport_code
 
 RATE_COLUMNS = ["rate_normal", "rate_45", "rate_100", "rate_300", "rate_500"]
 COLUMNS = [
-    "airline", "origin", "destination", "currency", "valid_from", "valid_to", "min_charge",
+    "airline",
+    "origin",
+    "destination",
+    "currency",
+    "valid_from",
+    "valid_to",
+    "min_charge",
     *RATE_COLUMNS,
 ]
 AIRLINE_CODE = re.compile(r"[A-Z0-9]{2}")  # IATA airline designator, e.g. LH
