@@ -21,7 +21,7 @@ Fuzzy rules:
 - One of the example rate sheets has overlapping validity windows and there's no mention of what to do in this case. It does say "one row per lane and validity window" which technically makes the sheet correct because they are different validity windows. It's not clear how to handle this though, for example if we should reject the rate sheet for that lane, use the narrowest window (which would also be tricky and have lots of edge cases), assume the lowest or highest price, etc.
 - It's not clear what would happen if a new rate sheet is sent for the same airline. It could mean that we completely replace the rates, and if there are date ranges not covered by the new sheet we reject the offers. Or it could mean that if there are date gaps, we still look into the previous sheets.
 - The offers result order is not mentioned. From the 2 examples in the README, it seems like the results are ordered by currency (alphabetical) and Total (increasing). But that's an assumption based on a very limited set of examples.
-- All the examples and documentation have integer for weight in kg and dimensions in cm, but the proto types are double, and it's not clear whether we should use decimals and how many.
+- All the examples and documentation have integer for weight in kg and dimensions in cm, but the proto types are double, and it's not clear whether we should use decimals and if there is any kind of rounding.
 - It's not clear whether all the weight breaks should always be informed, or if there can be some missing, and what to do in that case. The malformed CSV, for example, doesn't have the 500 break, and it's not clear whether we should completely reject it, or use the 300 as the last break.
 - I consider the date handling fuzzy, because in a real-world application the time zone would be important and cause a quote to fall on different validity windows.
 - No upper limit for the 500 break is clear, but there's no mention of a maximum weight, which would be reasonable to avoid input errors.
@@ -56,8 +56,8 @@ Fuzzy rules:
 ## Edge cases
 
 - The sample data for AF has an overlap in the validity windows. I have decided to calculate both and return the lowest calculated price, but it could also be the case that we would choose the innermost range always, or reject the rate sheet.
-- Weight is double in the proto but all the examples are int. I decided to use one decimal max and round the weight up to 0.1 kg, also when calculating the chargeable weight.
-- Dimensions are also double and the examples are int. I decided to round it up to the nearest whole cm.
+- Weight is double in the proto but all the examples are whole numbers. I decided to round the weight up to the next whole kg, also when calculating the chargeable weight. I left the type as Decimal so that it can be easily changed.
+- Dimensions are also double and the examples are whole numbers. I decided to round it up to the nearest whole cm. I left the type as Decimal so that it can be easily changed.
 - The rate sheets only have examples for USD and EUR, so I allow those and reject everything else
 - If a rate is missing, do we assume the lower rate, higher rate, or reject? Line 6 has rate_45 missing, and it's not clear whether this means it's the same as normal, or if it's a mistake.
   I decided to require all rates to be passed. To consider a lower rating we would need to find the first break before the first one that has a rate, and also consider what to do if the normal break has no rate. So validating seems reasonable, but possibly doesn't reflect real world usage.
