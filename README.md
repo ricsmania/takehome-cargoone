@@ -143,37 +143,42 @@ instead: keep the 2 RPCs and every existing field, listen on port 50051,
 and document the run command here. We grade the design and the rating logic,
 not the language.
 
-## Running the scaffold
+## Running the service
 
 Needs Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
 ```
 make install   # create the venv and install dependencies
-make test      # runs the one smoke test
-make run       # starts the server on :50051 (both RPCs answer UNIMPLEMENTED)
+make test      # unit tests and gRPC tests
+make run       # starts the server on :50051 (rates are kept in memory)
 make lint      # ruff
 make protos    # regenerate proto/*_pb2* after editing quote.proto
 ```
 
-A small client is included for manual poking, in a second terminal:
+With the server running, the client in a second terminal loads the sample sheets and quotes the
+README example:
 
 ```
 uv run python -m quote_service.client ingest rate_sheets/*.csv
 uv run python -m quote_service.client quote FRA JFK 80 120x80x60 2026-02-10
 ```
 
-Everything in this scaffold is yours to change, including the layout, the
-build tool and the client.
+```
+proto/quote.proto                     service and message definitions (+ generated code)
+quote_service/server.py               gRPC server: converts proto messages to and from the domain
+quote_service/service.py              ingest and quote use cases, input validation
+quote_service/rate_sheet.py           CSV parsing and validation
+quote_service/pricing.py              rating: weight breaks, as-agreed rating, min charge
+quote_service/chargeable_weight.py    chargeable weight
+quote_service/rate_repository.py      storage interface and the in-memory store
+quote_service/client.py               CLI client for manual testing
+rate_sheets/                          sample data, one CSV per airline, one malformed
+tests/                                pytest, unit tests and an in-process server fixture
+SPEC.md                               decisions, acceptance criteria and cut scope
+AI_NOTES.md                           notes on how I worked
+```
 
-```
-proto/quote.proto       service and message definitions (+ generated code)
-quote_service/server.py gRPC server with stubbed RPCs
-quote_service/client.py CLI client for manual testing
-rate_sheets/            sample data, one CSV per airline, one malformed
-tests/                  pytest with an in-process server fixture
-SPEC.md                 your spec (fill in first)
-AI_NOTES.md             your notes on how you worked
-```
+Time spent: around 5 hours (see SPEC.md).
 
 ## What happens next
 

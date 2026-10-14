@@ -39,7 +39,7 @@ proto, run `make protos`; never hand-edit the generated files.
 
 The author has to walk interviewers through this code without AI tools, so:
 
-- Don't write or edit `AI_NOTES.md` or `SPEC.md`. If there are inconsistensies, tell the author.
+- Don't write or edit `AI_NOTES.md` or `SPEC.md`. If there are inconsistencies, tell the author.
 - Prefer plain, explicit code over clever abstractions. Make small changes and explain the reasoning
   for each one.
 - When in doubt, ask instead of making assumptions.
