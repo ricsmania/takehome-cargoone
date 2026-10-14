@@ -30,13 +30,9 @@ class QuoteService:
 
     def get_quote(self, shipment: Shipment) -> list[Offer]:
         validate_shipment(shipment)
-        lane_rates = self._repository.get_rates(shipment.origin, shipment.destination)
-        # Both ends of the validity window are inclusive.
-        rates = [
-            rate
-            for rate in lane_rates
-            if rate.valid_from <= shipment.shipping_date <= rate.valid_to
-        ]
+        rates = self._repository.get_rates(
+            shipment.origin, shipment.destination, shipment.shipping_date
+        )
         return calculate_offers(shipment, rates)
 
 

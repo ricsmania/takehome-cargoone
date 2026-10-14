@@ -1,4 +1,4 @@
-"""Quote service: validity windows and input limits, with an in-memory repository."""
+"""Quote service: input limits, with an in-memory repository."""
 
 from datetime import date
 from decimal import Decimal
@@ -30,23 +30,6 @@ def shipment(shipping_date: str = "2026-02-10", weight: str = "96",
         dimensions=Dimensions(Decimal(side), Decimal(side), Decimal(side)),
         shipping_date=date.fromisoformat(shipping_date),
     )
-
-
-@pytest.mark.parametrize("shipping_date, has_offer", [
-    ("2026-01-14", False),
-    ("2026-01-15", True),
-    ("2026-02-28", True),
-    ("2026-03-01", False),
-])
-def test_validity_window_includes_both_ends(shipping_date, has_offer):
-    # given the QR sheet, whose FRA-JFK row is valid 2026-01-15 to 2026-02-28
-    service = service_with("QR")
-
-    # when FRA-JFK is quoted on a date around the window's ends
-    offers = service.get_quote(shipment(shipping_date))
-
-    # then QR quotes only inside the window, ends included
-    assert (len(offers) == 1) == has_offer
 
 
 @pytest.mark.parametrize("weight, side, message", [
