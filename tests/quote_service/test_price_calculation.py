@@ -108,8 +108,8 @@ def test_weight_on_a_break_minimum_lands_in_that_break(weight, weight_break, tot
 
 
 def test_as_agreed_rating_moves_up_from_just_below_a_break():
-    # given a 44.9 kg shipment, in the normal break: 44.9 x 4.10 = 184.09 EUR
-    to_quote = shipment("44.9", "10", "10", "10")
+    # given a 44 kg shipment, in the normal break: 44 x 4.10 = 180.40 EUR
+    to_quote = shipment("44", "10", "10", "10")
 
     # when the LH offer is calculated
     lines = offer_lines(to_quote, [LH])
