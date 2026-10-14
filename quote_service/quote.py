@@ -1,33 +1,31 @@
+"""The shipment to quote and the offers returned for it."""
+
 from dataclasses import dataclass
-from typing import List
+from datetime import date
+from decimal import Decimal
 
 
 @dataclass(frozen=True)
 class Dimensions:
-  weight: float
-  width: int
-  height: int
-  length: int
+    length_cm: Decimal
+    width_cm: Decimal
+    height_cm: Decimal
 
 
 @dataclass(frozen=True)
-class QuoteRequest:
-  origin: str
-  destination: str
-  dimensions: Dimensions
-  shipping_date: str
+class Shipment:
+    origin: str
+    destination: str
+    weight_kg: Decimal
+    dimensions: Dimensions
+    shipping_date: date
 
 
 @dataclass(frozen=True)
 class Offer:
-  airline: str
-  currency: str
-  chargeable_weight_kg: float
-  weight_break: str
-  rate_per_kg: float
-  total_price: float
-
-
-@dataclass(frozen=True)
-class QuoteResponse:
-  offers: List[Offer]
+    airline: str
+    currency: str
+    chargeable_weight_kg: Decimal
+    weight_break: str
+    rate_per_kg: Decimal
+    total_price: Decimal
