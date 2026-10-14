@@ -9,8 +9,8 @@ import grpc
 
 from proto import quote_pb2, quote_pb2_grpc
 from quote_service.errors import InvalidInputError
-from quote_service.quote import Dimensions, Offer, Shipment
-from quote_service.rate_repository import InMemoryRateRepository
+from quote_service.pricing.shipment import Dimensions, Offer, Shipment
+from quote_service.rates.rate_repository import InMemoryRateRepository
 from quote_service.service import QuoteService
 
 log = logging.getLogger(__name__)

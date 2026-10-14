@@ -7,9 +7,9 @@ from pathlib import Path
 import pytest
 
 from quote_service.errors import RateSheetError
-from quote_service.rate_sheet import parse_rate_sheet
+from quote_service.rates.rate_sheet import parse_rate_sheet
 
-RATE_SHEETS = Path(__file__).parents[2] / "rate_sheets"
+RATE_SHEETS = Path(__file__).parents[3] / "rate_sheets"
 HEADER = (
     "airline,origin,destination,currency,valid_from,valid_to,min_charge,"
     "rate_normal,rate_45,rate_100,rate_300,rate_500"

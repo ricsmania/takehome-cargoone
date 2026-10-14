@@ -7,7 +7,7 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 
 from quote_service.errors import RateSheetError
-from quote_service.rate import Rate
+from quote_service.rates.rate import Rate
 from quote_service.reference_data import CURRENCIES, is_airport_code
 
 RATE_COLUMNS = ["rate_normal", "rate_45", "rate_100", "rate_300", "rate_500"]

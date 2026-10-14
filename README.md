@@ -164,18 +164,20 @@ uv run python -m quote_service.client quote FRA JFK 80 120x80x60 2026-02-10
 ```
 
 ```
-proto/quote.proto                     service and message definitions (+ generated code)
-quote_service/server.py               gRPC server: converts proto messages to and from the domain
-quote_service/service.py              ingest and quote use cases, input validation
-quote_service/rate_sheet.py           CSV parsing and validation
-quote_service/pricing.py              rating: weight breaks, as-agreed rating, min charge
-quote_service/chargeable_weight.py    chargeable weight
-quote_service/rate_repository.py      storage interface and the in-memory store
-quote_service/client.py               CLI client for manual testing
-rate_sheets/                          sample data, one CSV per airline, one malformed
-tests/                                pytest, unit tests and an in-process server fixture
-SPEC.md                               decisions, acceptance criteria and cut scope
-AI_NOTES.md                           notes on how I worked
+proto/quote.proto                          service and message definitions (+ generated code)
+quote_service/server.py                    gRPC server: converts proto messages to and from the domain
+quote_service/service.py                   ingest and quote use cases, input validation
+quote_service/rates/rate.py                Rate: one rate sheet row
+quote_service/rates/rate_sheet.py          CSV parsing and validation
+quote_service/rates/rate_repository.py     storage interface and the in-memory store
+quote_service/pricing/shipment.py          Shipment, Dimensions and Offer
+quote_service/pricing/chargeable_weight.py chargeable weight
+quote_service/pricing/offers.py            weight breaks, as-agreed rating, min charge
+quote_service/client.py                    CLI client for manual testing
+rate_sheets/                               sample data, one CSV per airline, one malformed
+tests/                                     pytest, unit tests and an in-process server fixture
+SPEC.md                                    decisions, acceptance criteria and cut scope
+AI_NOTES.md                                notes on how I worked
 ```
 
 Time spent: around 5 hours (see SPEC.md).

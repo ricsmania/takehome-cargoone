@@ -2,8 +2,8 @@
 
 from decimal import Decimal
 
-from quote_service.chargeable_weight import calculate_chargeable_weight
-from quote_service.quote import Dimensions
+from quote_service.pricing.chargeable_weight import calculate_chargeable_weight
+from quote_service.pricing.shipment import Dimensions
 
 
 def dimensions(length: str, width: str, height: str) -> Dimensions:

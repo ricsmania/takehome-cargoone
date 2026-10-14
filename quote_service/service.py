@@ -3,10 +3,10 @@
 from decimal import Decimal
 
 from quote_service.errors import InvalidInputError
-from quote_service.pricing import calculate_offers
-from quote_service.quote import Offer, Shipment
-from quote_service.rate_repository import RateRepository
-from quote_service.rate_sheet import parse_rate_sheet
+from quote_service.pricing.offers import calculate_offers
+from quote_service.pricing.shipment import Offer, Shipment
+from quote_service.rates.rate_repository import RateRepository
+from quote_service.rates.rate_sheet import parse_rate_sheet
 from quote_service.reference_data import is_airport_code
 
 # Sanity limits, well above any real air cargo shipment. They keep absurd input from overflowing

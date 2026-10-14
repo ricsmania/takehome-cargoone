@@ -4,7 +4,7 @@ import threading
 from datetime import date
 from typing import Protocol
 
-from quote_service.rate import Rate
+from quote_service.rates.rate import Rate
 
 
 class RateRepository(Protocol):
