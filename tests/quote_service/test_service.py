@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from quote_service.domain.shipment import Dimensions, Shipment
 from quote_service.errors import InvalidInputError
-from quote_service.pricing.shipment import Dimensions, Shipment
 from quote_service.rates.rate_repository import InMemoryRateRepository
 from quote_service.service import QuoteService
 

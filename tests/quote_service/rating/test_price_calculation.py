@@ -5,9 +5,9 @@ from decimal import Decimal
 
 import pytest
 
-from quote_service.pricing.offers import calculate_offers
-from quote_service.pricing.shipment import Dimensions, Shipment
-from quote_service.rates.rate import Rate
+from quote_service.domain.rate import Rate
+from quote_service.domain.shipment import Dimensions, Shipment
+from quote_service.rating.offers import calculate_offers
 
 
 def rate(

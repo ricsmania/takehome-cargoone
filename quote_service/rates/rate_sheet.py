@@ -2,13 +2,14 @@
 
 import csv
 import io
-import re
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
+from quote_service.domain.airlines import is_airline_code
+from quote_service.domain.airports import is_airport_code
+from quote_service.domain.currencies import CURRENCIES
+from quote_service.domain.rate import Rate
 from quote_service.errors import RateSheetError
-from quote_service.rates.rate import Rate
-from quote_service.reference_data import CURRENCIES, is_airport_code
 
 RATE_COLUMNS = ["rate_normal", "rate_45", "rate_100", "rate_300", "rate_500"]
 COLUMNS = [
@@ -21,7 +22,6 @@ COLUMNS = [
     "min_charge",
     *RATE_COLUMNS,
 ]
-AIRLINE_CODE = re.compile(r"[A-Z0-9]{2}")  # IATA airline designator, e.g. LH
 
 
 def parse_rate_sheet(csv_content: str) -> list[Rate]:
@@ -61,7 +61,7 @@ def validate_row(row: dict) -> list[str]:
             errors.append(f"{column} is required")
 
     airline = values["airline"]
-    if airline and not AIRLINE_CODE.fullmatch(airline):
+    if airline and not is_airline_code(airline):
         errors.append(f"invalid airline: {airline}")
     for column in ("origin", "destination"):
         if values[column] and not is_airport_code(values[column]):

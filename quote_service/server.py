@@ -8,8 +8,9 @@ from decimal import Decimal
 import grpc
 
 from proto import quote_pb2, quote_pb2_grpc
+from quote_service.domain.offer import Offer
+from quote_service.domain.shipment import Dimensions, Shipment
 from quote_service.errors import InvalidInputError
-from quote_service.pricing.shipment import Dimensions, Offer, Shipment
 from quote_service.rates.rate_repository import InMemoryRateRepository
 from quote_service.service import QuoteService
 

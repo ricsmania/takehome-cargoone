@@ -2,9 +2,10 @@
 
 from decimal import ROUND_HALF_UP, Decimal
 
-from quote_service.pricing.chargeable_weight import calculate_chargeable_weight
-from quote_service.pricing.shipment import Offer, Shipment
-from quote_service.rates.rate import Rate
+from quote_service.domain.offer import Offer
+from quote_service.domain.rate import Rate
+from quote_service.domain.shipment import Shipment
+from quote_service.rating.chargeable_weight import calculate_chargeable_weight
 
 
 def calculate_offers(shipment: Shipment, rates: list[Rate]) -> list[Offer]:

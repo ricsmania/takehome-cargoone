@@ -1,4 +1,4 @@
-"""The shipment to quote and the offers returned for it."""
+"""The shipment to quote."""
 
 from dataclasses import dataclass
 from datetime import date
@@ -20,12 +20,3 @@ class Shipment:
     dimensions: Dimensions
     shipping_date: date
 
-
-@dataclass(frozen=True)
-class Offer:
-    airline: str
-    currency: str
-    chargeable_weight_kg: Decimal
-    weight_break: str
-    rate_per_kg: Decimal
-    total_price: Decimal

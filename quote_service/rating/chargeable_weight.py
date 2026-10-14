@@ -2,7 +2,7 @@
 
 from decimal import ROUND_CEILING, Decimal
 
-from quote_service.pricing.shipment import Dimensions
+from quote_service.domain.shipment import Dimensions
 
 VOLUMETRIC_DIVISOR = Decimal(6000)
 

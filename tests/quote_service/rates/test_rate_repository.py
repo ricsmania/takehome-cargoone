@@ -5,7 +5,7 @@ from decimal import Decimal
 
 import pytest
 
-from quote_service.rates.rate import Rate
+from quote_service.domain.rate import Rate
 from quote_service.rates.rate_repository import InMemoryRateRepository
 
 
