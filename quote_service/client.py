@@ -1,7 +1,7 @@
 """Small CLI to poke a running server. Not part of the challenge; change it freely.
 
-    uv run python -m quote_service.client ingest rate_sheets/LH.csv
-    uv run python -m quote_service.client quote FRA JFK 80 120x80x60 2026-02-10
+uv run python -m quote_service.client ingest rate_sheets/LH.csv
+uv run python -m quote_service.client quote FRA JFK 80 120x80x60 2026-02-10
 """
 
 import argparse
@@ -18,9 +18,7 @@ def _stub(target: str) -> quote_pb2_grpc.QuoteServiceStub:
 
 
 def ingest(stub: quote_pb2_grpc.QuoteServiceStub, path: Path) -> None:
-    response = stub.IngestRateSheet(
-        quote_pb2.IngestRateSheetRequest(csv_content=path.read_text())
-    )
+    response = stub.IngestRateSheet(quote_pb2.IngestRateSheetRequest(csv_content=path.read_text()))
     print(f"{path.name}: {response.rows_ingested} rows ingested")
 
 
@@ -53,7 +51,9 @@ def quote(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--target", default="localhost:50051")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -74,7 +74,9 @@ def main(argv: list[str] | None = None) -> int:
             for path in args.paths:
                 ingest(stub, path)
         else:
-            quote(stub, args.origin, args.destination, args.weight_kg, args.dims, args.shipping_date)
+            quote(
+                stub, args.origin, args.destination, args.weight_kg, args.dims, args.shipping_date
+            )
     except grpc.RpcError as err:
         print(f"{err.code().name}: {err.details()}", file=sys.stderr)
         return 1

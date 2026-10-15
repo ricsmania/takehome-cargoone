@@ -1,18 +1,16 @@
-"""Proves the scaffold boots. Replace this file with your own tests."""
-
-import grpc
-import pytest
+"""Proves the server boots and answers."""
 
 from proto import quote_pb2
 
 
-def test_get_quote_is_not_implemented_yet(stub):
-    # given a booted scaffold with no rating logic
-    request = quote_pb2.GetQuoteRequest(origin="FRA", destination="JFK", weight_kg=80)
+def test_empty_server_answers_with_no_offers(stub):
+    # given a booted server with nothing ingested
+    request = quote_pb2.GetQuoteRequest(
+        origin="FRA", destination="JFK", weight_kg=80, shipping_date="2026-02-10"
+    )
 
     # when a quote is requested
-    with pytest.raises(grpc.RpcError) as err:
-        stub.GetQuote(request)
+    response = stub.GetQuote(request)
 
-    # then the server answers UNIMPLEMENTED instead of crashing
-    assert err.value.code() == grpc.StatusCode.UNIMPLEMENTED
+    # then the answer is empty, not an error
+    assert list(response.offers) == []
