@@ -7,7 +7,7 @@ from quote_service.domain.offer import Offer
 from quote_service.domain.shipment import Shipment
 from quote_service.errors import InvalidInputError
 from quote_service.ingestion.csv_rate_sheet import parse_rate_sheet
-from quote_service.rating.offers import calculate_offers
+from quote_service.rating.offers import calculate_best_offer_per_airline
 from quote_service.storage.rate_repository import RateRepository
 
 # Sanity limits, well above any real air cargo shipment. They keep absurd input from overflowing
@@ -34,7 +34,7 @@ class QuoteService:
         rates = self._repository.get_rates(
             shipment.origin, shipment.destination, shipment.shipping_date
         )
-        return calculate_offers(shipment, rates)
+        return calculate_best_offer_per_airline(shipment, rates)
 
 
 def validate_shipment(shipment: Shipment) -> None:

@@ -8,14 +8,14 @@ from quote_service.domain.shipment import Shipment
 from quote_service.rating.chargeable_weight import calculate_chargeable_weight
 
 
-def calculate_offers(shipment: Shipment, rates: list[Rate]) -> list[Offer]:
+def calculate_best_offer_per_airline(shipment: Shipment, rates: list[Rate]) -> list[Offer]:
     chargeable_weight = calculate_chargeable_weight(shipment.weight_kg, shipment.dimensions)
 
     # One offer per airline. When an airline has several applicable rows (overlapping
     # validity windows), keep the cheapest.
     best_by_airline: dict[str, Offer] = {}
     for rate in rates:
-        offer = calculate_offer(chargeable_weight, rate)
+        offer = calculate_offer_for_rate(chargeable_weight, rate)
         current = best_by_airline.get(rate.airline)
         if current is None or offer.total_price < current.total_price:
             best_by_airline[rate.airline] = offer
@@ -27,7 +27,7 @@ def calculate_offers(shipment: Shipment, rates: list[Rate]) -> list[Offer]:
     )
 
 
-def calculate_offer(chargeable_weight: Decimal, rate: Rate) -> Offer:
+def calculate_offer_for_rate(chargeable_weight: Decimal, rate: Rate) -> Offer:
     breaks = weight_breaks(rate)
 
     # Start with the break that contains the chargeable weight: the last one whose

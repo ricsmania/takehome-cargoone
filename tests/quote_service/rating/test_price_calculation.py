@@ -7,7 +7,7 @@ import pytest
 
 from quote_service.domain.rate import Rate
 from quote_service.domain.shipment import Dimensions, Shipment
-from quote_service.rating.offers import calculate_offers
+from quote_service.rating.offers import calculate_best_offer_per_airline
 
 
 def rate(
@@ -59,7 +59,7 @@ def shipment(weight: str, length: str, width: str, height: str) -> Shipment:
 
 def offer_lines(to_quote: Shipment, rates: list[Rate]) -> list[tuple]:
     """Offers as (airline, currency, weight_break, total) lines, in the order returned."""
-    offers = calculate_offers(to_quote, rates)
+    offers = calculate_best_offer_per_airline(to_quote, rates)
     return [
         (offer.airline, offer.currency, offer.weight_break, str(offer.total_price))
         for offer in offers
