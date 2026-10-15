@@ -17,4 +17,3 @@ class RateRepository(Protocol):
         The date is part of the lookup so a database store can filter on it in its query.
         """
         ...
-

@@ -1,4 +1,4 @@
-"""The two RPCs end to end: wiring, status codes and the README example.
+"""The two RPCs end to end: wiring, status codes and a few complete quotes.
 
 The rules themselves are unit-tested next to the code that applies them."""
 
@@ -25,11 +25,11 @@ def ingest_samples(stub) -> None:
 
 def quote(
     stub,
-    origin="FRA",
-    destination="JFK",
-    weight=80.0,
-    dims=(120.0, 80.0, 60.0),
-    shipping_date="2026-02-10",
+    origin: str,
+    destination: str,
+    weight: float,
+    dims: tuple[float, float, float],
+    shipping_date: str,
 ) -> list[tuple]:
     """Offers as (airline, total, currency, weight_break) lines, in the order returned."""
     length, width, height = dims
@@ -59,14 +59,15 @@ def test_ingest_reports_rows(stub):
     assert rows == 4
 
 
-def test_readme_example_with_all_sample_sheets(stub):
+def test_bulky_shipment_gets_one_offer_per_airline(stub):
     # given all 4 sample sheets
     ingest_samples(stub)
 
-    # when the README shipment is quoted: FRA-JFK, 80 kg, 120 x 80 x 60 cm, 2026-02-10
-    offers = quote(stub)
+    # when an 80 kg, 120 x 80 x 60 cm shipment (96 kg chargeable) is quoted
+    offers = quote(stub, origin="FRA", destination="JFK", weight=80.0,
+                   dims=(120.0, 80.0, 60.0), shipping_date="2026-02-10")
 
-    # then the README table comes back
+    # then each airline quotes the 100 break, sorted by currency and then by price
     assert offers == [
         ("LH", 340.00, "EUR", "100"),
         ("AF", 365.00, "EUR", "100"),
@@ -80,7 +81,8 @@ def test_well_formed_airport_without_rates_gives_no_offers(stub):
     ingest_samples(stub)
 
     # when FRA-SYD is quoted (airports are only checked for format)
-    offers = quote(stub, destination="SYD")
+    offers = quote(stub, origin="FRA", destination="SYD", weight=80.0,
+                   dims=(120.0, 80.0, 60.0), shipping_date="2026-02-10")
 
     # then the answer is empty, not an error
     assert offers == []
@@ -91,7 +93,8 @@ def test_date_outside_every_window_gives_no_offers(stub):
     ingest(stub, (RATE_SHEETS / "AF.csv").read_text())
 
     # when CDG-JFK is quoted for 2027-01-01
-    offers = quote(stub, origin="CDG", weight=96.0, shipping_date="2027-01-01")
+    offers = quote(stub, origin="CDG", destination="JFK", weight=96.0,
+                   dims=(10.0, 10.0, 10.0), shipping_date="2027-01-01")
 
     # then the answer is empty, not an error
     assert offers == []
@@ -108,7 +111,8 @@ def test_malformed_sheet_is_rejected_and_not_stored(stub):
     # then the caller is told why and no XX offer appears
     assert err.value.code() == grpc.StatusCode.INVALID_ARGUMENT
     assert "missing columns: rate_500" in err.value.details()
-    assert quote(stub) == []
+    assert quote(stub, origin="FRA", destination="JFK", weight=80.0,
+                 dims=(120.0, 80.0, 60.0), shipping_date="2026-02-10") == []
 
 
 def test_reingesting_an_airline_replaces_its_rates(stub):
@@ -117,29 +121,33 @@ def test_reingesting_an_airline_replaces_its_rates(stub):
     header = (RATE_SHEETS / "LH.csv").read_text().splitlines()[0]
     ingest(stub, f"{header}\nLH,FRA,JFK,EUR,2026-04-01,2026-06-30,95.00,4.30,3.95,3.55,3.05,2.70\n")
 
-    # when the README shipment is quoted for 2026-02-10
-    offers = quote(stub)
+    # when FRA-JFK is quoted for 2026-02-10
+    offers = quote(stub, origin="FRA", destination="JFK", weight=80.0,
+                   dims=(120.0, 80.0, 60.0), shipping_date="2026-02-10")
 
     # then LH has no rate for that date any more and the other airlines are untouched
     assert [offer[0] for offer in offers] == ["AF", "EK", "QR"]
 
 
 @pytest.mark.parametrize(
-    "request_fields, message",
+    "origin, destination, weight, dims, shipping_date, message",
     [
-        ({"weight": -10.0}, "weight must be >= 0"),
-        ({"dims": (120.0, -80.0, 60.0)}, "width must be >= 0"),
-        ({"weight": 1e26}, "weight must be <= 100000"),
-        ({"shipping_date": "10/02/2026"}, "shipping_date must be an ISO 8601 date"),
-        ({"origin": "FRANKFURT"}, "invalid origin: 'FRANKFURT'"),
-        ({"destination": "jfk"}, "invalid destination: 'jfk'"),
+        ("FRA", "JFK", -10.0, (120.0, 80.0, 60.0), "2026-02-10", "weight must be >= 0"),
+        ("FRA", "JFK", 80.0, (120.0, -80.0, 60.0), "2026-02-10", "width must be >= 0"),
+        ("FRA", "JFK", 1e26, (120.0, 80.0, 60.0), "2026-02-10", "weight must be <= 100000"),
+        ("FRA", "JFK", 80.0, (120.0, 80.0, 60.0), "10/02/2026",
+         "shipping_date must be an ISO 8601 date"),
+        ("FRANKFURT", "JFK", 80.0, (120.0, 80.0, 60.0), "2026-02-10",
+         "invalid origin: 'FRANKFURT'"),
+        ("FRA", "jfk", 80.0, (120.0, 80.0, 60.0), "2026-02-10", "invalid destination: 'jfk'"),
     ],
 )
-def test_invalid_quote_requests(stub, request_fields, message):
+def test_invalid_quote_requests(stub, origin, destination, weight, dims, shipping_date, message):
     # given a quote request with one bad field
     # when it is sent
     with pytest.raises(grpc.RpcError) as err:
-        quote(stub, **request_fields)
+        quote(stub, origin=origin, destination=destination, weight=weight, dims=dims,
+              shipping_date=shipping_date)
 
     # then the caller gets INVALID_ARGUMENT naming the field
     assert err.value.code() == grpc.StatusCode.INVALID_ARGUMENT

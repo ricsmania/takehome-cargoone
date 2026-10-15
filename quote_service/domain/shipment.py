@@ -19,4 +19,3 @@ class Shipment:
     weight_kg: Decimal
     dimensions: Dimensions
     shipping_date: date
-

@@ -11,7 +11,7 @@ def dimensions(length: str, width: str, height: str) -> Dimensions:
 
 
 def test_volumetric_weight_wins_for_bulky_shipment():
-    # given the README shipment: 80 kg actual, 120 x 80 x 60 cm = 96 kg volumetric
+    # given a bulky shipment: 80 kg actual, 120 x 80 x 60 cm = 96 kg volumetric
     weight, size = Decimal(80), dimensions("120", "80", "60")
 
     # when chargeable weight is calculated
