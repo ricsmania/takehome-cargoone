@@ -164,24 +164,12 @@ uv run python -m quote_service.client quote FRA JFK 80 120x80x60 2026-02-10
 ```
 
 ```
-proto/quote.proto                           service and message definitions (+ generated code)
-quote_service/server.py                     gRPC server: converts proto messages to and from the domain
-quote_service/service.py                    ingest and quote use cases, input validation
-quote_service/domain/                       plain data and codes, imports nothing else in the project
-  rate.py, shipment.py, offer.py            Rate (one rate sheet row), Shipment and Dimensions, Offer
-  airports.py, airlines.py, currencies.py   codes the service accepts
-quote_service/rating/                       pure rating rules, depend only on domain
-  chargeable_weight.py                      chargeable weight
-  offers.py                                 weight breaks, as-agreed rating, min charge
-quote_service/ingestion/csv_rate_sheet.py   CSV parsing and validation
-quote_service/storage/                      the storage seam
-  rate_repository.py                        RateRepository, the interface the service uses
-  in_memory_rate_repository.py              the in-memory store
-quote_service/client.py                     CLI client for manual testing
-rate_sheets/                                sample data, one CSV per airline, one malformed
-tests/                                      pytest, unit tests and an in-process server fixture
-SPEC.md                                     decisions, acceptance criteria and cut scope
-AI_NOTES.md                                 notes on how I worked
+proto/            the API contract (+ generated code)
+quote_service/    the service; SPEC.md "Design decisions" explains its packages
+rate_sheets/      sample data, one CSV per airline, one malformed
+tests/            unit tests per package, gRPC tests, smoke test
+SPEC.md           decisions, acceptance criteria and cut scope
+AI_NOTES.md       notes on how I worked
 ```
 
 Time spent: around 5 hours (see SPEC.md).

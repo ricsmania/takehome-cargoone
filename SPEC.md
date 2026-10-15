@@ -44,7 +44,7 @@ Fuzzy rules:
   dimensions in cm, but the proto types are double, and it's not clear whether
   we should use decimals and if there is any kind of rounding. It's also not
   clear whether zero-value weights and dimensions should be accepted.
-- It's not clear whether all the weight breaks should always be informed on
+- It's not clear whether all the weight breaks should always be provided on
   the rate sheets, or if there can be some missing, and what to do in that
   case. The malformed CSV, for example, doesn't have the 500 break, and it's
   not clear whether we should completely reject it, or use the 300 as the last
@@ -64,19 +64,30 @@ Fuzzy rules:
 
 - I decided to use Python even though I'm not proficient in it to use the
   opportunity to practice and learn more
-- All the calculations are split into specific files with pure functions, and
-  the service has the glue code to connect the calculation, the data operations
-  from the repository, and the gRPC handlers
-- Bad input such as invalid CSVs and negative weights are returned as INVALID_ARGUMENT.
-  No matching rate returns OK and an empty list. Unexpected server errors map to
-  UNKNOWN.
+- Structure of the service, each part depending only on the ones above it:
+  - `domain/`: data classes and the codes the service accepts. No dependencies
+  - `rating/`: pure functions with the rating rules (chargeable weight,
+    weight breaks, min charge). Depends only on `domain/`
+  - `ingestion/`: parses and validates a CSV rate sheet into `Rate`
+    objects. Depends only on `domain/`
+  - `storage/`: the `RateRepository` interface and the in-memory
+    implementation. Depends only on `domain/`
+  - `service.py`: validates the quote request and connects storage,
+    ingestion and rating
+  - `server.py`: the gRPC layer. Converts proto messages to domain types
+    and maps errors to status codes
+- Storage is in-memory, behind the `RateRepository` interface. Rating never
+  imports storage: the service fetches the rates and passes them in. A
+  database store would implement the same 2 methods without changing rating
+  or the service
+- Bad input, such as an invalid CSV or a negative weight, is rejected with
+  INVALID_ARGUMENT. No matching rate returns OK and an empty list.
+  Unexpected server errors map to UNKNOWN
 - When ingesting the rates, multiple errors are returned instead of stopping
   on the first, except if the header itself is invalid
 - No extra dependencies were added, for example for validation
 - `Decimal` and `date` types are used inside the service, and converted at the
   gRPC boundary
-- Storage is in-memory but with a clear boundary and an interface so it can be
-  easily replaced
 - The rule to check which rates match the shipment date was done in the
   repository, because in a real application there will potentially be
   thousands of different rates, and already filtering on the database would be
@@ -108,8 +119,8 @@ Fuzzy rules:
   - line 6 - rate_45 is required
 - Given a 0 kg shipment FRA-JFK on 2026-02-10, LH quotes its min_charge of
   90.00 EUR
-- Given a -10 kg, the quote fails with INVALID_ARGUMENT and "weight must be >=
-  0"
+- Given a -10 kg shipment, the quote fails with INVALID_ARGUMENT and
+  "weight must be >= 0"
 
 ## Edge cases
 
@@ -122,10 +133,10 @@ Fuzzy rules:
   the chargeable weight. I left the type as Decimal so that it can be easily
   changed.
 - Dimensions are also double and the examples are whole numbers. I decided to
-  round it up to the nearest whole cm. I left the type as Decimal so that it
+  round it up to the next whole cm. I left the type as Decimal so that it
   can be easily changed.
 - The rate sheets only have examples for USD and EUR, so I allow those and
-  reject everything else
+  reject everything else.
 - If a rate is missing, do we assume the lower rate, higher rate, or reject?
   Line 6 has rate_45 missing, and it's not clear whether this means it's the
   same as normal, or if it's a mistake. I decided to require all rates to be
@@ -134,7 +145,8 @@ Fuzzy rules:
   normal break has no rate. So validating seems reasonable, but possibly
   doesn't reflect real world usage.
 - There is no mention of 0 kg weight and/or dimensions. If the chargeable
-  weight is 0, I decided to accept it and apply the minimum charge.
+  weight is 0, I decided to accept it and apply the minimum charge. For the
+  maximum weight I added 100_000.
 - I order the results by currency and then total because it matches the
   examples in the README, but that's not mentioned.
 - If multiple breaks have the same final price, I return the lowest one.
@@ -159,11 +171,14 @@ Fuzzy rules:
 - I didn't add any kind of type validation such as with Pydantic, because I
   felt this would be overkill for a challenge.
 - Defining the weight breaks as an array/list rather than named "rate_x"
-  fields could make the calculations potentially simpler
+  fields could make the calculations potentially simpler.
 - The server assumes one CSV per airline, and I didn't add validation to check
-  because the rule is fuzzy
+  because the rule is fuzzy.
 - I didn't add any kind of database. My first idea was to use Postgres and
   Docker Compose for local testing, but it would add too much complexity.
+- I also wanted to add automated tests running the actual server and client
+  inside Docker Compose so it can easily run on the CI, but that would also
+  add too much complexity.
 
 ## Time spent
 

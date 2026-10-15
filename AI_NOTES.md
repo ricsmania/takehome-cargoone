@@ -50,10 +50,9 @@ When I asked it to create a test covering the overlapping date windows, it
 added a smoke test rather than a unit test. I asked why, and it said I was
 right to question it, and moved it to a unit test.
 
-When I asked it to create a CLAUDE.md file, it was very long and didn't follow
-their own best practices. A second attempt added very specific decisions that
-were already documented on SPEC.md, and I had to add that that was the source
-of truth, and I didn't want to have duplicate info.
+When creating tests, it added many helper functions with default values,
+but I prefer to have explicit values passed, so it's easier to review and
+it also lowers the chance of breaking later.
 
 ## What you kept without fully understanding
 
@@ -84,11 +83,30 @@ with Python:
 I use Claude Code daily at my job, and also for personal projects. My main
 issues for sure are the hallucinations. One of the responsibilities at work is
 integrating with a transportation partner. They have their own API, and
-neither the API or the documentation is public. Even checking out the docs
-locally, and instructing Claude explictly to only consider that repository, it
-often either checks another API from the same partner that is public, or
+neither the API nor the documentation is public. Even checking out the docs
+locally, and instructing Claude explicitly to only consider that repository,
+it often either checks another API from the same partner that is public, or
 downright invents methods that don't exist and probably never existed.
 
 I improved this behavior by adding specific instructions on CLAUDE.md to
 always check the private API docs rather than the public one. The newer models
 (5+) seem much better at actually following those instructions.
+
+I also use LLMs for a hobby project, which is a game discovery/recommendation
+platform, and I use Claude both for writing the code and also on the platform
+itself.
+
+There the challenge is more related to costs. I could use the LLMs to
+recommend games directly, but that would be extremely expensive, so instead I
+use some very light models such as Haiku for tagging games, and then I can
+compare games based on those tags. Since it's a lighter model, there are some
+quality issues with the output, such as tags that are too specific. For newly
+added tags, I use Sonnet to evaluate the quality, and then I do a manual check
+to see which ones are worth keeping. I also have some automated tests where I
+compare the generated tags with a manually curated list for a few well known
+games, and it gives me a score so I can improve the prompt and the tagging
+engine.
+
+The platform is also using Jev, a small classifier model from typesafe.ai,
+for simple yes/no questions such as flagging spam/offensive content for manual
+review.
