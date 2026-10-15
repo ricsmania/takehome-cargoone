@@ -171,7 +171,8 @@ Fuzzy rules:
 - I didn't add any kind of type validation such as with Pydantic, because I
   felt this would be overkill for a challenge.
 - Defining the weight breaks as an array/list rather than named "rate_x"
-  fields could make the calculations potentially simpler.
+  fields could make the calculations potentially simpler, and more flexible
+  in case different airlines have different breaks.
 - The server assumes one CSV per airline, and I didn't add validation to check
   because the rule is fuzzy.
 - I didn't add any kind of database. My first idea was to use Postgres and
@@ -179,8 +180,16 @@ Fuzzy rules:
 - I also wanted to add automated tests running the actual server and client
   inside Docker Compose so it can easily run on the CI, but that would also
   add too much complexity.
+- There was still a lot of refactoring I would do, such as further splitting
+  logic, rename methods, etc, but given the time constraints I decided not to.
 
 ## Time spent
 
-Around 5 hours. Since I haven't used Python in a while, I also took the chance
-to practice but that also made me less productive than usual.
+Around 5 to 6 hours of focused time between Oct 12-15. I spent ~1 hour initially
+to understand the problem and write the first version of the SPEC. Then, I
+spent the next ~3 hours working with Claude Code to implement the tests and
+the code, and adding more information to SPEC based on new discoveries, edge
+cases and refactoring. Then I spent 1 to ~2 hours at the end writing the AI
+notes, a couple more rounds of refactoring and doing a final review before
+submission. Python is not a language I'm fluent in, but I still wanted to use it
+to practice and learn, and this made me go a bit over budget.

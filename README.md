@@ -172,7 +172,7 @@ SPEC.md           decisions, acceptance criteria and cut scope
 AI_NOTES.md       notes on how I worked
 ```
 
-Time spent: around 5 hours (see SPEC.md).
+Time spent: around 5 to 6 hours (see SPEC.md).
 
 ## What happens next
 
